@@ -722,6 +722,12 @@
             const uploadLink = `${SITE_URL}/homeowner-upload?token=${uploadToken}`;
             
             // Create fields object with ONLY the fields that exist in Airtable
+            // Map workflow values to Airtable dropdown options (with proper capitalization)
+            const workflowMapping = {
+                'homeowner_upload': 'Homeowner Upload',
+                'contractor_upload': 'Contractor Upload'
+            };
+            
             const fields = {
                 'Customer Name': formData.customerName,
                 'Customer Email': formData.customerEmail,
@@ -731,15 +737,18 @@
                 'Install Location': formData.installLocation || '',
                 'EV Model': formData.evModel || '',
                 'Notes': formData.projectNotes || '',
-                'Photo Workflow': formData.photoWorkflow,
+                'Photo Workflow': workflowMapping[formData.photoWorkflow],
                 'Project Status': 'Pending Photos'
             };
             
             if (formData.photoWorkflow === 'homeowner_upload') {
                 fields['Upload Token'] = uploadToken;
                 fields['Upload URL'] = uploadLink;
-                // Only add Email Sent At field
                 fields['Email Sent At'] = new Date().toISOString();
+                // Add Token Expires At (7 days from now)
+                const expiresAt = new Date();
+                expiresAt.setDate(expiresAt.getDate() + 7);
+                fields['Token Expires At'] = expiresAt.toISOString();
             }
             
             try {
