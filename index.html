@@ -631,9 +631,24 @@
         // ============================================
         // AIRTABLE CONFIGURATION - UPDATE THESE VALUES
         // ============================================
-        const AIRTABLE_PAT = 'YOUR_AIRTABLE_TOKEN_HERE';  // REPLACE WITH YOUR TOKEN
-        const BASE_ID = 'app1Wk4PXoo8eaiJW';
-        const PROJECTS_TABLE = 'Projects';
+        // Fetch config from secure endpoint
+        let AIRTABLE_PAT, BASE_ID, PROJECTS_TABLE;
+
+        async function loadConfig() {
+          try {
+            const response = await fetch('/api/config');
+            const config = await response.json();
+            AIRTABLE_PAT = config.airtableToken;
+            BASE_ID = config.baseId;
+            PROJECTS_TABLE = config.tableName;
+          } catch (error) {
+            console.error('Failed to load config:', error);
+            alert('Configuration error. Please refresh the page.');
+          }
+        }
+
+        // Load config when page loads
+        loadConfig();
         const SITE_URL = window.location.origin;
         
         const homeownerCard = document.getElementById('homeownerCard');
