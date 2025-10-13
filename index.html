@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ Bolt Quotes - Turn EV Charger Quotes From Days to Minutes</title>
+    <title>Bolt Quotes - Launch in 60 Days</title>
     <style>
         * {
             margin: 0;
@@ -12,7 +12,7 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: #1F2937;
         }
@@ -23,8 +23,9 @@
             padding: 0 20px;
         }
         
-        /* Hero */
-        .hero {
+/* Hero */
+     
+.hero {
             background: linear-gradient(135deg, #2532eb 0%, #2532eb 100%);
             color: white;
             padding: 80px 20px;
@@ -32,14 +33,13 @@
         }
         
         .hero h1 {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 20px;
             line-height: 1.2;
-            font-weight: 700;
         }
         
         .hero .subtitle {
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             margin-bottom: 30px;
             opacity: 0.95;
         }
@@ -64,14 +64,18 @@
             text-decoration: none;
             font-weight: 600;
             transition: transform 0.2s;
-            cursor: pointer;
-            border: none;
         }
         
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
         }
+        
+        .trust-line {
+            margin-top: 30px;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
         
         /* Sections */
         section {
@@ -83,21 +87,20 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         /* Problem Section */
         .problem-section {
-	 padding: 80px 20px;
+            padding: 80px 20px;
             background: #FEF2F2;
         }
         
-        
         .problem-section h2 {
-             font-size: 2.5rem;
-             text-align: center;
-             margin-bottom: 50px;
-             color: #DC2626;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 50px;
+            color: #DC2626;
         }
-	
+        
         .problem-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -118,7 +121,25 @@
             color: #DC2626;
         }
         
-        /* Features */
+        /* Solution Section */
+        .solution-section {
+            padding: 80px 20px;
+            background: white;
+        }
+        
+        .solution-section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .solution-tagline {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #6B7280;
+            margin-bottom: 50px;
+        }
+        
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -127,10 +148,10 @@
         }
         
         .feature-card {
-              background: #F9FAFB;
-              padding: 30px;
-              border-radius: 10px;            
-	   text-align: center;    
+            background: #F9FAFB;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
         }
         
         .feature-icon {
@@ -140,34 +161,32 @@
         
         .feature-card h3 {
             font-size: 1.3rem;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
-        /* Pricing */
-        .pricing {
+        /* Pricing Section */
+        .pricing-section {
             padding: 80px 20px;
-            background: #F9FAFB;
+            background: #F3F4F6;
         }
         
-        .pricing h2 {
-            font-size: 2.5 rem;
+        .pricing-section h2 {
+            font-size: 2.5rem;
             text-align: center;
-            margin-bottom: 20px
+            margin-bottom: 20px;
         }
-
-       
+        
         .pricing-subtitle {
             text-align: center;
             font-size: 1.2rem;
             color: #6B7280;
             margin-bottom: 50px;
         }
-
-        .pricing-grid {
+        
+        .pricing-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
-            margin-top: 40px;
             max-width: 900px;
             margin: 0 auto;
         }
@@ -175,16 +194,15 @@
         .pricing-card {
             background: white;
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            text-align: relative;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         
         .pricing-card.featured {
             border: 3px solid #10B981;
             transform: scale(1.05);
         }
-        
         
         .badge {
             position: absolute;
@@ -198,15 +216,12 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
- 
-
+        
         .price {
             font-size: 3rem;
-            font-weight: 700;
-            color: #667eea;
+            font-weight: bold;
             margin: 20px 0;
         }
-
         
         .price-period {
             font-size: 1.2rem;
@@ -222,30 +237,29 @@
             font-weight: 600;
         }
         
+        
         .price-note {
             font-size: 0.9rem;
             color: #6B7280;
             margin-bottom: 20px;
         }
-        
-        .pricing-features {
+         
+        .features-list {
             list-style: none;
-            text-align: left;
-            margin: 20px 0;
+            margin: 30px 0;
         }
         
-        .pricing-features li {
+        .features-list li {
             padding: 12px 0;
             border-bottom: 1px solid #E5E7EB;
         }
         
-        .pricing-features li:before {
-            content: "✓ ";
+        .features-list li:before {
+            content: "✓";
             color: #10B981;
             font-weight: bold;
-            margin-right: 8px;
+            margin-right: 10px;
         }
-        
         
         /* Roadmap Section */
         .roadmap-section {
@@ -451,102 +465,56 @@
             align-items: center;
             gap: 8px;
         }
- 
 
-        /* Final CTA */
-        .final-cta {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-align: center;
-        }
-        
-        .spots-remaining {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        
-        .form-container {
-            max-width: 500px;
-            margin: 40px auto 0;
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-input, .form-select {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-        }
-        
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .trust-signals {
-            margin-top: 30px;
-            font-size: 1rem;
-            opacity: 0.9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
-        
-        .trust-signal {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
         /* Footer */
-        footer {
-            background: #1F2937;
+        .footer {
+            padding: 40px 20px;
+            background: #111827;
             color: white;
             text-align: center;
-            padding: 40px 20px;
         }
         
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.5rem;
-            }
-            
-            h2 {
                 font-size: 2rem;
             }
             
             .pricing-card.featured {
-                transform: scale(1);
+                transform: none;
             }
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
     </style>
 </head>
 <body>
-    <!-- Hero -->
+
+    
+<!-- Hero -->
     <section class="hero">
         <div class="container">
-            <div class="launch-badge">🚀 Launching in 60 Days - Lock In Founding Member Pricing</div>
+            <div class="launch-badge">🚀 Launching in <span id="daysRemaining">60</span> Days - Lock In Founding Member Pricing</div>
             <h1>⚡ Bolt Quotes</h1>
-            <p class="subtitle">Turn EV Charger Quotes From 3 Days to 30 Minutes</p>
+            <p class="subtitle">Turn EV Charger Quotes From Days to Minutes</p>
             <p style="font-size: 1.2rem; margin-bottom: 30px;">
-                Remote photo review. Professional quotes. No site visits needed.
+               Built specifically for electricians.<br> 
+	    Homeowners upload photos. Your review them. Get instant, accurate quotes. No site visits needed.
             </p>
             <a href="#waitlist" class="cta-button" onclick="scrollToForm(event)">Join the Waitlist →</a>
-        </div>
-    </section>
 
-    <!-- Problem -->
+	<div class="pricing-highlight">
+	                <strong>First 100 members: $99/month for 6 months then $149/month forever</strong><br>
+	                (Regular price: $199/month)
+	</div>
+	            
+	<p class="social-proof">
+	        Join <span id="waitlistCount" class="loading">...</span> electricians already on the waitlist
+	            </p>
+               </div>
+        </section>
+<!-- Problem -->
     <section class="problem">
         <div class="container">
             <h2>The Problem With EV Charger Quotes Today</h2>
@@ -585,7 +553,7 @@
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
                     <h3>Generate Professional Quote</h3>
-                    <p>Create a detailed, branded quote in minutes. Send it while the customer is hot.</p>
+                    <p>Create a detailed, quote in minutes. Send it while the customer is hot.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">💰</div>
@@ -599,59 +567,58 @@
         </div>
     </section>
 
-    <!-- Pricing -->
-    <section class="pricing" id="pricing">
+   
+    <!-- Pricing Section -->
+    <section class="pricing-section" id="pricing">
         <div class="container">
-            <h2>Founding Member Pricing</h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 40px; color: #6B7280;">
-                Lock in founding member pricing before we launch AI-powered features. No credit Card Required. Cancel Anytime.
-            </p>
-            <div class="pricing-grid">
+               <h2>Simple Transparent Pricing</h2>
+               <p class="pricing-subtitle">Lock in early-bird pricing before we launch AI-powered features. No credit card required. Cancel anytime.
+</p>
+            
+               <div class="pricing-cards">
+	            <!-- Early Bird Section -->
                 <div class="pricing-card featured">
-	     <div class="badge">LIMITED TIME - First 100 Only</div>
+                    <div class="badge">LIMITED TIME - First 100 Only</div>
                     <h3>Founding Member</h3>
-                    <div class="price">$99<span style="font-size: 1.5rem;">/mo</span></div>
-	         <div class="savings">Save $600 in first 6 months</div>
-                    <div class="price-note">First 6 months, then $149/mo<br>Limited to first 100 electricians</div>
-                    <ul class="pricing-features">
+                    <div class="price">$99<span class="price-period">/month</span></div>
+                    <div class="savings">Save $600 in first 6 Months</div>
+	         <div class="price-note">First 6 months, then $149/mo<br>Limited to first 100 electricians</div>
+                    <ul class="features-list">
                         <li>Unlimited quotes</li>
                         <li>Customer photo upload links</li>
-                        <li>Professional quote templates</li>
-                        <li>Email notifications</li>
-                        <li>Mobile-friendly</li>
-	             <li>Interactive quote calculator</li>
-	             <li>Project tracking dashboard</li>
-	             <li>Priority Support</li>
-	             <li>Free upgrades with AI launches</li>
-	             <li>Lifetime discount locked in</li>
+                        <li>Interactive quote calculator</li>
+                        <li>Project tracking dashboard</li>
+                        <li>Priority Support</li>
+                        <li>Free upgrades with AI launches</li>
+                        <li>Lifetime discount locked in</li>
                     </ul>
-                    <a href="#waitlist" class="cta-button" style="width: 100%; margin-top: 20px; text-align:center;" onclick="scrollToForm(event)">Join Waitlist</a>
-	     
-	<p class="price-note">
-	 <strong>⏰ <span id="spotsRemaining" class="loading">...</span> of 100 founding member spots remaining</strong><br>
-	</p>
-       </div>
-                
-                <div class="pricing-card">
-                    <h3>Standard</h3>
-                    <div class="price">$199<span style="font-size: 1.5rem;">/mo</span></div>
-                    <div class="price-note">Regular pricing after launch<br>Available to everyone</div>
-                    <ul class="pricing-features">
-                        <li>Unlimited quotes</li>
-                        <li>Customer photo upload links</li>
-                        <li>Professional quote templates</li>
-                        <li>Email notifications</li>
-                        <li>Mobile-friendly</li>
-                        <li>No lifetime discount</li>
-	             <li>Project tracking dashboard</li>
-	             <li>Interactive quote calculator</li>
-	             <li>AI features when available</li>
-	             <li>Standard Support</li>
-                    </ul>
-                    <button class="cta-button" style="width: 100%; margin-top: 20px; text-align:center; opacity: 0.6; cursor: not-allowed;" disabled>After Launch</button>
-                </div>
+                    
+                    <a href="#waitlist" class="cta-button" style="width: 100%; margin-top: 20px; text-align:center;" onclick="scrollToForm(event)">Join Waitlist→</a>
+	        
+               <p class="pricing-note">
+                <strong>⏰ <span id="spotsRemaining" class="loading">...</span> of 100 founding member spots remaining</strong><br>
+	    </p>
             </div>
-        </div>
+                
+	     <!-- Regular Pricing -->
+                <div class="pricing-card">
+	         <h3>Standard</h3>
+                    <div class="price">$199<span class="price-period">/month</span></div>
+                    <p style="color: #6B7280; margin-bottom: 20px:">After first 100 sign up</p>
+	         <ul class="features-list">
+                        <li>Unlimited quotes</li>
+                        <li>Customer photo upload links</li>
+                        <li>Professional quote templates</li>
+                        <li>Email notifications</li>
+                        <li>Mobile-friendly</li>
+                        <li>Project tracking dashboard</li>
+                        <li>Interactive quote calculator</li>
+                        <li>AI features when available</li>
+                        <li>Standard Support</li>
+	         </ul>
+                   <a href="#waitlist" class="cta-button" style="width: 100%; margin-top: 20px; opacity: 0.6; cursor: not-allowed; text-align:center;" disabled>After Launch</a>
+                    
+         </div>
     </section>
 
     <!-- Roadmap Section -->
@@ -721,7 +688,7 @@
     </section>
 
 
-    <!-- Early Adopter Benefits -->
+	<!-- Early Adopter Benefits -->
     <section class="early-adopter-section">
         <div class="container">
             <h2>Why Join As an Early Adopter?</h2>
@@ -745,7 +712,7 @@
 
 
    
-    <!-- FAQ Section -->
+	<!-- FAQ Section -->
     <section class="faq-section">
         <div class="container">
                <h2>Frequently Asked Questions</h2>
@@ -783,57 +750,59 @@
         </div>
     </section>
 
-    <!-- Final CTA / Waitlist Form -->
+<!-- Final CTA -->
     <section class="final-cta" id="waitlist">
         <div class="container">
-            <h2 style="color: white;">Lock In $99/Month Before It's Gone</h2>
-            <p class="spots-remaining">⏰ <span id="spotsRemainingFooter" class="loading">…</span> of 100 Founding Member Spots Remaining</p>
+            <h2>Lock In $99/Month Before It's Gone</h2>
+            <p class="spots-remaining">⏰ <span id="spotsRemainingFooter" class="loading">...</span>  of 100 Founding Member Spots Remaining</p>
             <p style="font-size: 1.2rem; margin-bottom: 30px;">
                 Join now. Get the product in 60 days. Pay nothing until launch.
             </p>
             
-            <div class="form-container">
-                <form id="waitlistForm" onsubmit="submitWaitlist(event)">
-                    <div class="form-group">
-                        <input type="text" id="name" class="form-input" placeholder="Your Name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <input type="email" id="email" class="form-input" placeholder="Email Address" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <input type="tel" id="phone" class="form-input" placeholder="Phone Number (Optional)">
-                    </div>
-                    
-                    <div class="form-group">
-                        <input type="text" id="business" class="form-input" placeholder="Business Name (Optional)">
-                    </div>
-                    
-                    <div class="form-group">
-                        <select id="quoteVolume" class="form-select" required>
-                            <option value="">How many EV charger quotes per month?</option>
-                            <option value="1-5">1-5 quotes</option>
-                            <option value="6-10">6-10 quotes</option>
-                            <option value="11-20">11-20 quotes</option>
-                            <option value="20+">20+ quotes</option>
-                        </select>
-                    </div>
-                    
-                    <button type="submit" class="cta-button" style="width: 100%;">Claim My $99/Month Spot</button>
-                </form>
-            </div>
+           <!-- Waitlist Form -->
+    
+	 <div class="form-container">
+	                <form id="waitlistForm" onsubmit="submitWaitlist(event)">
+	                    <div class="form-group">
+	                        <input type="text" id="name" class="form-input" placeholder="Your Name" required>
+	                    </div>
+	                    
+	                    <div class="form-group">
+	                        <input type="email" id="email" class="form-input" placeholder="Email Address" required>
+	                    </div>
+	                    
+	                    <div class="form-group">
+	                        <input type="tel" id="phone" class="form-input" placeholder="Phone Number (Optional)">
+	                    </div>
+	                    
+	                    <div class="form-group">
+	                        <input type="text" id="business" class="form-input" placeholder="Business Name (Optional)">
+	                    </div>
+	                    
+	                    <div class="form-group">
+	                        <select id="quoteVolume" class="form-select" required>
+	                            <option value="">How many EV charger quotes per month?</option>
+	                            <option value="1-5 quotes">1-5 quotes</option>
+	                            <option value="6-10 quotes">6-10 quotes</option>
+	                            <option value="11-20 quotes">11-20 quotes</option>
+	                            <option value="20+ quotes">20+ quotes</option>
+	                        </select>
+	                    </div>
+	                <button type="submit" class="cta-button" style="width: 100%; margin-top: 10px;">Claim My $99/Month Spot</button>
+            </form>
             
-            <div class="trust-signals">
-                <div class="trust-signal">✓ No Credit Card Required</div>
-                <div class="trust-signal">✓ Launch in 60 Days</div>
-                <div class="trust-signal">✓ Cancel Anytime</div>
-            </div>
+            <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.8;">
+                We'll email you 2 weeks before launch.
+            </p>
+        </div>            
+             <div class="trust-signals">
+	    <div class="trust-signal">✓ No Credit Card Required</div>  
+	    <div class="trust-signal">✓ Launch in <span id="daysRemainingFooter2">60</span> Days</div>  
+	    <div class="trust-signal">✓ Cancel Anytime</p></div>
         </div>
     </section>
 
-   
-<!-- Footer -->
+    <!-- Footer -->
     <footer>
         <div class="container">
             <p>© 2025 Bolt Quotes | Built for electricians, by people who understand the business</p>
@@ -847,16 +816,27 @@
     </footer>
 
     <script>
-        // Smooth scroll to form
-        function scrollToForm(event) {
+           // ==========================================
+	//Smooth scroll to form
+	// ==========================================
+	function scrollToForm(event) {
             event.preventDefault();
             document.getElementById('waitlist').scrollIntoView({ 
                 behavior: 'smooth',
                 block: 'start'
             });
         }
-  
+
+         // ========================================
+         // AIRTABLE CONFIGURATION
+         // ========================================
+        const API_ENDPOINT = 'https://api.airtable.com/v0/applWK4PXoo86ajvD/Waitlist';
+        const AIRTABLE_API_KEY = '';
+        const LAUNCH_DATE = new Date('2025-12-15');
         
+        let waitlistCount = 0;
+        let spotsRemaining = 100;
+
         // ========================================
         // FETCH REAL WAITLIST COUNT FROM AIRTABLE
         // ========================================
@@ -930,81 +910,83 @@
             document.getElementById('daysRemainingFooter2').textContent = daysToShow;
         }
 
-        // Handle form submission
-        async function submitWaitlist(event) {
-            event.preventDefault();
-            
-            const submitButton = event.target.querySelector('button[type="submit"]');
-            const originalText = submitButton.textContent;
-            
-            // Disable button and show loading
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
-            
-            // Get form values
+        // ========================================
+        // HANDLE FORM SUBMISSION TO AIRTABLE API
+        // ========================================
+        async function submitWaitlist() {
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value || '',
-                business: document.getElementById('business').value || '',
+                phone: document.getElementById('phone').value,
+                business: document.getElementById('business').value,
                 quoteVolume: document.getElementById('quoteVolume').value
             };
-            
-            // Store name for success message
-            const customerName = formData.name;
-            
+
+            // Validate required fields
+            if (!formData.name || !formData.email || !formData.quoteVolume) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Validate email format
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
             try {
-                // Send to Vercel API endpoint (same domain now!)
-                const response = await fetch('/api/waitlist', {
+                const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${AIRTABLE_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify({
+                        fields: {
+                            Name: formData.name,
+                            Email: formData.email,
+                            Phone: formData.phone || '',
+                            Business: formData.business || '',
+                            'Quote Volume': formData.quoteVolume,
+                            Timestamp: new Date().toISOString()
+                        }
+                    })
                 });
 
-                const data = await response.json();
-
                 if (!response.ok) {
-                    throw new Error(data.error || 'Failed to submit');
+                    const errorData = await response.json();
+                    console.error('Airtable error:', errorData);
+                    throw new Error('Submission failed');
                 }
-
-                // Show success message
-                const formContainer = document.querySelector('.form-container');
-                formContainer.innerHTML = 
-                    '<div style="text-align: center; padding: 40px 20px;">' +
-                        '<div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>' +
-                        '<h3 style="font-size: 1.8rem; margin-bottom: 15px; color: #10B981;">You\'re on the Waitlist!</h3>' +
-                        '<p style="font-size: 1.1rem; color: #6B7280; margin-bottom: 20px;">' +
-                            'Welcome to the founding member waitlist, ' + customerName + '!' +
-                        '</p>' +
-                        '<p style="color: #6B7280;">' +
-                            'Check your email for confirmation and next steps.' +
-                        '</p>' +
-                    '</div>';
-
-                // Update spots remaining
-                const spotsElement = document.querySelector('.spots-remaining');
-                if (spotsElement) {
-                    const match = spotsElement.textContent.match(/\d+/);
-                    if (match) {
-                        const currentNumber = parseInt(match[0]);
-                        if (currentNumber > 0) {
-                            spotsElement.textContent = '⏰ ' + (currentNumber - 1) + ' of 100 Founding Member Spots Remaining';
-                        }
-                    }
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error: ' + error.message + '\n\nPlease try again or contact support.');
                 
-                // Re-enable button
-                submitButton.disabled = false;
-                submitButton.textContent = originalText;
+                // Refresh count after successful submission
+                await fetchWaitlistCount();
+                
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('There was an error submitting your information. Please try again.');
+                return;
             }
+
+            // Show success message
+            document.getElementById('waitlistForm').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+
+            // Reset form
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('business').value = '';
+            document.getElementById('quoteVolume').value = '';
+
+            // Hide success message after 5 seconds
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+                document.getElementById('waitlistForm').style.display = 'block';
+            }, 5000);
         }
-    
+
         // ========================================
         // INITIALIZE ON PAGE LOAD
         // ========================================
@@ -1027,6 +1009,94 @@
                 }
             }
         });
+        
+         // ========================================
+         // SHOW SUCCESS MESSAGE
+        // ========================================
+       const formContainer = document.querySelector('.form-container'); 
+       formContainer.innerHTML = ` 
+	   <div style="text-align: center; padding: 40px 20px;"> <div style="font-size: 4rem; margin-bottom: 20px;">🎉    </div> 
+	   <h3 style="font-size: 1.8rem; margin-bottom: 15px; color: #10B981;">You're on the Waitlist!</h3> 
+	   <p style="font-size: 1.1rem; color: #6B7280; margin-bottom: 20px;"> Welcome to the founding member waitlist, ${formData.name}!
+	 </p> 
+	<p style="color: #6B7280;">
+	       Check your email for confirmation and next steps. 
+	</p> 
+    </div> `;            
+      
+        // ========================================
+        //  RESET FORM
+        // ========================================
+       document.getElementById('waitlistForm').reset();
+  // Handle form submission
+    async function submitWaitlist(event) {
+        event.preventDefault();
+        
+        const submitButton = event.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        
+        // Disable button and show loading
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+        
+        // Get form values
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value || '',
+            business: document.getElementById('business').value || '',
+            quoteVolume: document.getElementById('quoteVolume').value
+        };
+        
+        try {
+            // Send to Vercel API endpoint
+            const response = await fetch('https://bolt-quotes-proxy.vercel.app/api/waitlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to submit');
+            }
+
+            // Show success message
+            const formContainer = document.querySelector('.form-container');
+            formContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">🎉</div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 15px; color: #10B981;">You're on the Waitlist!</h3>
+                    <p style="font-size: 1.1rem; color: #6B7280; margin-bottom: 20px;">
+                        Welcome to the founding member waitlist, ${formData.name}!
+                    </p>
+                    <p style="color: #6B7280;">
+                        Check your email for confirmation and next steps.
+                    </p>
+                </div>
+            `;
+
+            // Update spots remaining
+            const spotsElement = document.querySelector('.spots-remaining');
+            if (spotsElement) {
+                const currentNumber = parseInt(spotsElement.textContent.match(/\d+/)[0]);
+                if (currentNumber > 0) {
+                    spotsElement.textContent = `⏰ ${currentNumber - 1} of 100 Founding Member Spots Remaining`;
+                }
+            }
+
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('Error: ' + error.message + '\n\nPlease try again or contact support.');
+            
+            // Re-enable button
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
+    }
     </script>
 </body>
 </html>
