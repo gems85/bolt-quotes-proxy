@@ -56,7 +56,7 @@ export default async function handler(req, res) {
             {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
+                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(photoRecord)
