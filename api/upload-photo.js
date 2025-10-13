@@ -21,7 +21,7 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
         
-        const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+        const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
         const BASE_ID = 'applWK4PXoo86ajvD';
         
         // Calculate file size
@@ -56,7 +56,7 @@ export default async function handler(req, res) {
             {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(photoRecord)
