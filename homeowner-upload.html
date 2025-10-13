@@ -470,7 +470,7 @@
             submitButton.textContent = 'Uploading...';
             
             try {
-                // Upload each photo to Airtable Photos table
+                // Upload each photo using our API endpoint
                 for (let i = 1; i <= 4; i++) {
                     const file = uploadedPhotos[i];
                     if (!file) continue;
@@ -483,64 +483,50 @@
                     // Get image dimensions
                     const dimensions = await getImageDimensions(file);
                     
-                    // Calculate file size in MB
-                    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
-                    
-                    // Generate Photo ID
-                    const photoId = `PHOTO-${Date.now()}-${i}`;
-                    
-                    // Create photo record
-                    const photoData = {
-                        fields: {
-                            'Photo ID': photoId,
-                            'Project': [currentProject.id],
-                            'Photo Type': photoTypes[i],
-                            'Uploaded By': 'Homeowner',
-                            'File': [{
-                                filename: file.name,
-                                url: base64
-                            }],
-                            'File Size (MB)': parseFloat(fileSizeMB),
-                            'Width': dimensions.width,
-                            'Uploaded At': new Date().toISOString()
-                        }
+                    // Upload via our API endpoint
+                    const uploadData = {
+                        photoData: base64,
+                        projectId: currentProject.id,
+                        photoType: photoTypes[i],
+                        uploadedBy: 'Homeowner',
+                        width: dimensions.width,
+                        height: dimensions.height
                     };
                     
-                    const response = await fetch(
-                        `https://api.airtable.com/v0/${BASE_ID}/Photos`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${airtableConfig.airtableToken}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(photoData)
-                        }
-                    );
+                    const response = await fetch('/api/upload-photo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(uploadData)
+                    });
                     
                     if (!response.ok) {
-                        throw new Error(`Failed to upload photo ${i}`);
+                        const error = await response.json();
+                        throw new Error(error.message || `Failed to upload photo ${i}`);
                     }
+                    
+                    const result = await response.json();
+                    console.log(`Photo ${i} uploaded:`, result);
                     
                     document.getElementById(`status${i}`).textContent = '✓ Uploaded';
                 }
                 
-                // Update project status
-                await fetch(
-                    `https://api.airtable.com/v0/${BASE_ID}/Projects/${currentProject.id}`,
-                    {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `Bearer ${airtableConfig.airtableToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            fields: {
-                                'Status': 'Photos Uploaded'
-                            }
-                        })
-                    }
-                );
+                // Update project status using our API
+                const statusResponse = await fetch('/api/update-project-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        projectId: currentProject.id,
+                        status: 'Photos Uploaded'
+                    })
+                });
+                
+                if (!statusResponse.ok) {
+                    console.warn('Failed to update project status, but photos uploaded successfully');
+                }
                 
                 // Show success
                 document.getElementById('uploadScreen').style.display = 'none';
