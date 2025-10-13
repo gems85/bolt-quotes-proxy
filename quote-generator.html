@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Generator - Bolt Quotes</title>
+    <title>Bolt Quotes - Quote Generator</title>
     <style>
         * {
             margin: 0;
@@ -499,8 +499,9 @@
         // Load all projects
         async function loadAllProjects() {
             try {
+                // Simpler query without view filter
                 const response = await fetch(
-                    `https://api.airtable.com/v0/${BASE_ID}/Projects?view=Grid%20view&sort[0][field]=Created%20At&sort[0][direction]=desc`,
+                    `https://api.airtable.com/v0/${BASE_ID}/Projects`,
                     {
                         headers: {
                             'Authorization': `Bearer ${airtableConfig.airtableToken}`
@@ -508,10 +509,18 @@
                     }
                 );
                 
-                if (!response.ok) throw new Error('Failed to load projects');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Airtable error:', errorData);
+                    throw new Error(`Airtable error: ${errorData.error?.message || 'Unknown error'}`);
+                }
                 
                 const data = await response.json();
-                allProjects = data.records;
+                
+                // Sort by created time (most recent first)
+                allProjects = data.records.sort((a, b) => {
+                    return new Date(b.createdTime) - new Date(a.createdTime);
+                });
                 
                 populateProjectSelector();
                 document.getElementById('loadingScreen').style.display = 'none';
