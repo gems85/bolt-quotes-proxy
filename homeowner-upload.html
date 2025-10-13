@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Your Electrical Panel Photos - Bolt Quotes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .welcome-message {
+            color: #667eea;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 15px 0;
+        }
+        
+        .project-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .project-info p {
+            color: #6c757d;
+            margin: 5px 0;
+        }
+        
+        .instructions {
+            background: white;
+            padding: 30px;
+            margin-top: -1px;
+        }
+        
+        .instructions h2 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .instructions p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .photo-upload-box {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .photo-upload-box:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .photo-upload-box.uploaded {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+        
+        .photo-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        .photo-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .photo-description {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+        
+        .photo-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .upload-status {
+            font-size: 0.85rem;
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .submit-section {
+            background: white;
+            padding: 30px;
+            border-radius: 0 0 15px 15px;
+            text-align: center;
+        }
+        
+        .submit-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .submit-button:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .submit-button:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+        
+        .progress-text {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+        }
+        
+        .success-message {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .success-message h2 {
+            color: #10b981;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        .success-message p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .required-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loadingScreen" class="loading">
+            <div class="spinner"></div>
+            <p>Loading project details...</p>
+        </div>
+        
+        <div id="errorScreen" style="display: none;">
+            <div class="error-message">
+                <h2>⚠️ Error</h2>
+                <p id="errorText"></p>
+            </div>
+        </div>
+        
+        <div id="uploadScreen" style="display: none;">
+            <div class="header">
+                <div class="logo">⚡ Bolt Quotes</div>
+                <h1>Upload Your Electrical Panel Photos</h1>
+                <div class="welcome-message" id="welcomeMessage"></div>
+                <div class="project-info" id="projectInfo"></div>
+            </div>
+            
+            <div class="instructions">
+                <h2>📸 Please Upload 4 Photos of Your Electrical Panel</h2>
+                <p>Take clear photos of your electrical panel to help us provide an accurate quote. Make sure the photos are well-lit and in focus.</p>
+                
+                <div class="photo-grid">
+                    <div class="photo-upload-box" onclick="document.getElementById('photo1').click()" id="box1">
+                        <div class="photo-icon">📷</div>
+                        <div class="photo-label">Panel Interior <span class="required-badge">REQUIRED</span></div>
+                        <div class="photo-description">Open panel with all breakers visible</div>
+                        <input type="file" id="photo1" accept="image/*" onchange="handlePhotoSelect(1)">
+                        <img id="preview1" class="photo-preview" style="display: none;">
+                        <div id="status1" class="upload-status" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="photo-upload-box" onclick="document.getElementById('photo2').click()" id="box2">
+                        <div class="photo-icon">📷</div>
+                        <div class="photo-label">Panel Exterior <span class="required-badge">REQUIRED</span></div>
+                        <div class="photo-description">Closed panel with door shut</div>
+                        <input type="file" id="photo2" accept="image/*" onchange="handlePhotoSelect(2)">
+                        <img id="preview2" class="photo-preview" style="display: none;">
+                        <div id="status2" class="upload-status" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="photo-upload-box" onclick="document.getElementById('photo3').click()" id="box3">
+                        <div class="photo-icon">📷</div>
+                        <div class="photo-label">Breaker Labels <span class="required-badge">REQUIRED</span></div>
+                        <div class="photo-description">Close-up of breaker schedule/labels</div>
+                        <input type="file" id="photo3" accept="image/*" onchange="handlePhotoSelect(3)">
+                        <img id="preview3" class="photo-preview" style="display: none;">
+                        <div id="status3" class="upload-status" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="photo-upload-box" onclick="document.getElementById('photo4').click()" id="box4">
+                        <div class="photo-icon">📷</div>
+                        <div class="photo-label">Installation Location <span class="required-badge">REQUIRED</span></div>
+                        <div class="photo-description">Where the charger will be installed</div>
+                        <input type="file" id="photo4" accept="image/*" onchange="handlePhotoSelect(4)">
+                        <img id="preview4" class="photo-preview" style="display: none;">
+                        <div id="status4" class="upload-status" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="submit-section">
+                <p class="progress-text" id="progressText">0 of 4 photos uploaded</p>
+                <button class="submit-button" id="submitButton" onclick="submitPhotos()" disabled>
+                    Submit Photos
+                </button>
+            </div>
+        </div>
+        
+        <div id="successScreen" style="display: none;">
+            <div class="success-message">
+                <div class="success-icon">✅</div>
+                <h2>Photos Uploaded Successfully!</h2>
+                <p>Thank you for uploading your photos. Your contractor will review them and send you a quote shortly.</p>
+                <p style="margin-top: 15px; font-size: 0.9rem;">You can close this page now.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Configuration
+        const BASE_ID = 'applWK4PXoo86ajvD';
+        const CONFIG_URL = '/api/config';
+        
+        // Global state
+        let currentProject = null;
+        let uploadToken = null;
+        let uploadedPhotos = {
+            1: null,
+            2: null,
+            3: null,
+            4: null
+        };
+        let airtableConfig = null;
+        
+        const photoTypes = {
+            1: 'Panel Interior',
+            2: 'Panel Exterior',
+            3: 'Breaker Labels',
+            4: 'Installation Location'
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            uploadToken = urlParams.get('token');
+            
+            if (!uploadToken) {
+                showError('Invalid upload link. Please use the link provided in your email.');
+                return;
+            }
+            
+            await loadConfig();
+            await loadProjectDetails();
+        });
+        
+        // Load Airtable config
+        async function loadConfig() {
+            try {
+                const response = await fetch(CONFIG_URL);
+                if (!response.ok) throw new Error('Failed to load configuration');
+                airtableConfig = await response.json();
+            } catch (error) {
+                showError('Configuration error. Please contact support.');
+                console.error('Config error:', error);
+            }
+        }
+        
+        // Load project details
+        async function loadProjectDetails() {
+            try {
+                const response = await fetch(
+                    `https://api.airtable.com/v0/${BASE_ID}/Projects?filterByFormula={Upload Token}='${uploadToken}'`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${airtableConfig.airtableToken}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load project');
+                }
+                
+                const data = await response.json();
+                
+                if (data.records.length === 0) {
+                    showError('Project not found. This link may have expired or is invalid.');
+                    return;
+                }
+                
+                currentProject = data.records[0];
+                displayProjectInfo();
+                
+            } catch (error) {
+                showError('Error loading project: ' + error.message);
+                console.error('Load error:', error);
+            }
+        }
+        
+        // Display project info
+        function displayProjectInfo() {
+            const fields = currentProject.fields;
+            
+            document.getElementById('welcomeMessage').textContent = 
+                `Welcome, ${fields['Customer Name']}!`;
+            
+            document.getElementById('projectInfo').innerHTML = `
+                <p><strong>Property:</strong> ${fields['Property Address'] || 'N/A'}</p>
+                <p><strong>Project ID:</strong> ${fields['Project ID'] || currentProject.id.substring(0, 8)}</p>
+            `;
+            
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('uploadScreen').style.display = 'block';
+        }
+        
+        // Handle photo selection
+        function handlePhotoSelect(photoNumber) {
+            const input = document.getElementById(`photo${photoNumber}`);
+            const file = input.files[0];
+            
+            if (!file) return;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById(`preview${photoNumber}`);
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                
+                document.getElementById(`box${photoNumber}`).classList.add('uploaded');
+                document.getElementById(`status${photoNumber}`).textContent = '✓ Photo selected';
+                document.getElementById(`status${photoNumber}`).style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            
+            uploadedPhotos[photoNumber] = file;
+            updateProgress();
+        }
+        
+        // Update progress
+        function updateProgress() {
+            const uploadedCount = Object.values(uploadedPhotos).filter(p => p !== null).length;
+            document.getElementById('progressText').textContent = `${uploadedCount} of 4 photos uploaded`;
+            
+            const submitButton = document.getElementById('submitButton');
+            if (uploadedCount === 4) {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit All Photos';
+            } else {
+                submitButton.disabled = true;
+                submitButton.textContent = `Upload ${4 - uploadedCount} More Photo${4 - uploadedCount > 1 ? 's' : ''}`;
+            }
+        }
+        
+        // Submit photos
+        async function submitPhotos() {
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Uploading...';
+            
+            try {
+                // Upload each photo to Airtable Photos table
+                for (let i = 1; i <= 4; i++) {
+                    const file = uploadedPhotos[i];
+                    if (!file) continue;
+                    
+                    document.getElementById(`status${i}`).textContent = 'Uploading...';
+                    
+                    // Convert file to base64
+                    const base64 = await fileToBase64(file);
+                    
+                    // Get image dimensions
+                    const dimensions = await getImageDimensions(file);
+                    
+                    // Calculate file size in MB
+                    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    
+                    // Generate Photo ID
+                    const photoId = `PHOTO-${Date.now()}-${i}`;
+                    
+                    // Create photo record
+                    const photoData = {
+                        fields: {
+                            'Photo ID': photoId,
+                            'Project': [currentProject.id],
+                            'Photo Type': photoTypes[i],
+                            'Uploaded By': 'Homeowner',
+                            'File': [{
+                                filename: file.name,
+                                url: base64
+                            }],
+                            'File Size (MB)': parseFloat(fileSizeMB),
+                            'Width': dimensions.width,
+                            'Uploaded At': new Date().toISOString()
+                        }
+                    };
+                    
+                    const response = await fetch(
+                        `https://api.airtable.com/v0/${BASE_ID}/Photos`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${airtableConfig.airtableToken}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(photoData)
+                        }
+                    );
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to upload photo ${i}`);
+                    }
+                    
+                    document.getElementById(`status${i}`).textContent = '✓ Uploaded';
+                }
+                
+                // Update project status
+                await fetch(
+                    `https://api.airtable.com/v0/${BASE_ID}/Projects/${currentProject.id}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${airtableConfig.airtableToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            fields: {
+                                'Status': 'Photos Uploaded'
+                            }
+                        })
+                    }
+                );
+                
+                // Show success
+                document.getElementById('uploadScreen').style.display = 'none';
+                document.getElementById('successScreen').style.display = 'block';
+                
+            } catch (error) {
+                alert('Error uploading photos: ' + error.message);
+                submitButton.disabled = false;
+                submitButton.textContent = 'Try Again';
+                console.error('Upload error:', error);
+            }
+        }
+        
+        // Helper: Convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // Helper: Get image dimensions
+        function getImageDimensions(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    resolve({
+                        width: img.width,
+                        height: img.height
+                    });
+                };
+                img.src = URL.createObjectURL(file);
+            });
+        }
+        
+        // Show error
+        function showError(message) {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('uploadScreen').style.display = 'none';
+            document.getElementById('errorScreen').style.display = 'block';
+            document.getElementById('errorText').textContent = message;
+        }
+    </script>
+</body>
+</html>
