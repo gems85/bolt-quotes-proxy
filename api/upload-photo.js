@@ -1,108 +1,105 @@
+// api/upload-photo.js
+// Handles photo uploads to Airtable Photos table
+// Uses ImgBB to host images (Airtable needs URLs for attachments)
+
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '10mb',
+        },
+    },
+};
+
 export default async function handler(req, res) {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-    
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
-    
+
+    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
+    const IMGBB_API_KEY = process.env.IMGBB_API_KEY; // Free image hosting
+    const BASE_ID = 'applWK4PXoo86ajvD';
+    const PHOTOS_TABLE = 'Photos';
+
+    if (!AIRTABLE_TOKEN) {
+        return res.status(500).json({ error: 'Server configuration error' });
+    }
+
     try {
-        const { photoData, projectId, photoType, uploadedBy, width, height } = req.body;
+        const { projectId, photoType, imageBase64 } = req.body;
+
+        // Upload image to ImgBB (or any free image host)
+        let imageUrl;
         
-        if (!photoData || !projectId || !photoType) {
-            return res.status(400).json({ error: 'Missing required fields' });
+        if (IMGBB_API_KEY) {
+            // Use ImgBB if API key is configured
+            const formData = new FormData();
+            formData.append('image', imageBase64.split(',')[1]); // Remove data:image/... prefix
+            
+            const imgbbResponse = await fetch(
+                `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+                {
+                    method: 'POST',
+                    body: formData
+                }
+            );
+
+            const imgbbData = await imgbbResponse.json();
+            if (!imgbbData.success) {
+                throw new Error('Failed to upload image to hosting service');
+            }
+            
+            imageUrl = imgbbData.data.url;
+        } else {
+            // Fallback: Store base64 temporarily (not ideal for production)
+            // You should set up ImgBB or Cloudinary API key
+            imageUrl = imageBase64;
         }
-        
-        const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-        const BASE_ID = 'applWK4PXoo86ajvD';
-        
-        // Calculate file size
-        const base64Data = photoData.split(',')[1];
-        const fileSizeBytes = Math.ceil((base64Data.length * 3) / 4);
-        const fileSizeMB = (fileSizeBytes / (1024 * 1024)).toFixed(2);
-        
-        // Generate Photo ID
-        const photoId = `PHOTO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        
-        // Get file extension from data URL
-        const mimeType = photoData.split(';')[0].split(':')[1];
-        const extension = mimeType.split('/')[1];
-        const filename = `${photoType.replace(/\s+/g, '-')}-${Date.now()}.${extension}`;
-        
-        // Create photo record
-        const photoRecord = {
+
+        // Create photo record in Airtable with image URL
+        const airtableData = {
             fields: {
-                'Photo ID': photoId,
                 'Project': [projectId],
                 'Photo Type': photoType,
-                'Uploaded By': uploadedBy || 'Homeowner',
-                'File Size (MB)': parseFloat(fileSizeMB),
-                'Width': width || null,
-                'Uploaded At': new Date().toISOString()
+                'Uploaded By': 'Homeowner',
+                'Photos': [
+                    {
+                        url: imageUrl
+                    }
+                ]
             }
         };
-        
-        // First create the record
-        const createResponse = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/Photos`,
+
+        const response = await fetch(
+            `https://api.airtable.com/v0/${BASE_ID}/${PHOTOS_TABLE}`,
             {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(photoRecord)
+                body: JSON.stringify(airtableData)
             }
         );
-        
-        if (!createResponse.ok) {
-            const error = await createResponse.json();
-            throw new Error(error.error?.message || 'Failed to create photo record');
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Airtable error:', errorData);
+            throw new Error('Failed to create photo record in Airtable');
         }
-        
-        const createdRecord = await createResponse.json();
-        
-        // Now upload the file attachment
-        const attachmentResponse = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/Photos/${createdRecord.id}`,
-            {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fields: {
-                        'File': [{
-                            filename: filename,
-                            url: photoData
-                        }]
-                    }
-                })
-            }
-        );
-        
-        if (!attachmentResponse.ok) {
-            const error = await attachmentResponse.json();
-            console.error('Attachment error:', error);
-            // Don't fail - record was created, just missing attachment
-        }
-        
-        res.status(200).json({ success: true, record: createdRecord });
-        
+
+        const result = await response.json();
+
+        return res.status(200).json({
+            success: true,
+            photoId: result.id,
+            imageUrl: imageUrl
+        });
+
     } catch (error) {
         console.error('Upload error:', error);
-        res.status(500).json({ 
-            error: 'Upload failed', 
-            message: error.message 
+        return res.status(500).json({
+            error: 'Failed to upload photo',
+            message: error.message
         });
     }
 }
