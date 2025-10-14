@@ -7,11 +7,11 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const BASE_ID = 'applWK4PXoo86ajvD';
     const TABLE_NAME = 'Projects';
 
-    if (!AIRTABLE_PAT) {
+    if (!AIRTABLE_TOKEN) {
         return res.status(500).json({ error: 'Airtable API token not configured' });
     }
 
