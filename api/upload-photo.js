@@ -48,9 +48,9 @@ export default async function handler(req, res) {
 
     console.log('=== Upload Photo API Called ===');
 
-    if (!AIRTABLE_TOKEN || !IMGBB_API_KEY) {
+    if (!AIRTABLE_PAT || !IMGBB_API_KEY) {
         console.error('Missing environment variables:', {
-            hasAirtablePAT: !!AIRTABLE_TOKEN,
+            hasAirtablePAT: !!AIRTABLE_PAT,
             hasImgBBKey: !!IMGBB_API_KEY
         });
         return res.status(500).json({ error: 'Server configuration error' });
@@ -149,7 +149,7 @@ export default async function handler(req, res) {
             {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(airtableData)
