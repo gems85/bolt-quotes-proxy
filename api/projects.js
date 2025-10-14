@@ -1,5 +1,5 @@
 // api/projects.js
-// Vercel Serverless Function to fetch projects from Airtable
+// Vercel Serverless Function to fetch projects and photos from Airtable
 
 export default async function handler(req, res) {
     // Only allow GET requests
@@ -9,15 +9,17 @@ export default async function handler(req, res) {
 
     const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const BASE_ID = 'applWK4PXoo86ajvD';
-    const TABLE_NAME = 'Projects';
+    const PROJECTS_TABLE = 'Projects';
+    const PHOTOS_TABLE = 'Photos';
 
     if (!AIRTABLE_TOKEN) {
         return res.status(500).json({ error: 'Airtable API token not configured' });
     }
 
     try {
-        const response = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}?view=Grid%20view`,
+        // Fetch projects
+        const projectsResponse = await fetch(
+            `https://api.airtable.com/v0/${BASE_ID}/${PROJECTS_TABLE}`,
             {
                 headers: {
                     'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
@@ -26,21 +28,51 @@ export default async function handler(req, res) {
             }
         );
 
-        if (!response.ok) {
-            const errorData = await response.json();
+        if (!projectsResponse.ok) {
+            const errorData = await projectsResponse.json();
             console.error('Airtable API Error:', errorData);
-            return res.status(response.status).json({ 
+            return res.status(projectsResponse.status).json({ 
                 error: 'Failed to fetch projects from Airtable',
                 details: errorData
             });
         }
 
-        const data = await response.json();
+        const projectsData = await projectsResponse.json();
         
-        // Return the projects
+        // Fetch all photos
+        const photosResponse = await fetch(
+            `https://api.airtable.com/v0/${BASE_ID}/${PHOTOS_TABLE}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+
+        let photosData = { records: [] };
+        if (photosResponse.ok) {
+            photosData = await photosResponse.json();
+        }
+
+        // Attach photos to their respective projects
+        const projectsWithPhotos = projectsData.records.map(project => {
+            const projectId = project.fields['Project ID'];
+            const projectPhotos = photosData.records.filter(photo => 
+                photo.fields['Project'] === projectId || 
+                (Array.isArray(photo.fields['Project']) && photo.fields['Project'].includes(project.id))
+            );
+            
+            return {
+                ...project,
+                photos: projectPhotos
+            };
+        });
+        
+        // Return the projects with photos
         return res.status(200).json({
             success: true,
-            projects: data.records || []
+            projects: projectsWithPhotos
         });
 
     } catch (error) {
