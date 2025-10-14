@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quote Generator - Bolt Quotes</title>
+    <title>Bolt Quotes - Quote Generator</title>
     <style>
         * {
             margin: 0;
@@ -13,53 +13,77 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #2532eb 0%, #2532eb 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             overflow: hidden;
         }
         
         .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
         
         .header h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 10px;
-        }
-        
-        .project-selector {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            border-bottom: 2px solid #e9ecef;
             display: flex;
             align-items: center;
-            gap: 15px;
+            justify-content: center;
+            gap: 10px;
         }
         
-        .project-selector label {
+        .header p {
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .form-row label {
             font-weight: 600;
+            min-width: 120px;
             color: #2c3e50;
         }
         
-        .project-selector select {
-            padding: 10px 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 16px;
-            min-width: 400px;
+        .form-row select,
+        .form-row input {
             flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
         }
         
         .refresh-btn {
@@ -67,293 +91,113 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 1rem;
+            margin-left: 10px;
         }
         
         .refresh-btn:hover {
             background: #2980b9;
         }
         
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-            font-size: 18px;
+        .customer-info p {
+            margin: 10px 0;
+            font-size: 1rem;
         }
         
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 15px;
-            margin: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #c33;
-        }
-        
-        .customer-info {
-            background: #e8f5e8;
-            padding: 20px;
-            margin: 20px;
-            border-radius: 8px;
-            border-left: 4px solid #27ae60;
-        }
-        
-        .customer-info h3 {
-            color: #27ae60;
-            margin-bottom: 15px;
-        }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        
-        .info-item {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .info-label {
-            font-weight: 600;
+        .customer-info strong {
             color: #2c3e50;
-        }
-        
-        .info-value {
-            color: #555;
-        }
-        
-        .status-badge {
+            min-width: 150px;
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-photos-uploaded {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        
-        .status-quoted {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .photos-section {
-            margin: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .photos-section h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
         }
         
         .photos-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
         
         .photo-item {
-            border: 2px solid #e1e8ed;
+            background: white;
+            padding: 10px;
             border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .photo-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .photo-item img {
             width: 100%;
             height: 200px;
             object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
         
-        .photo-label {
-            padding: 8px;
-            background: white;
+        .photo-item p {
             text-align: center;
-            font-size: 14px;
-            color: #555;
-        }
-        
-        .no-photos {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-        
-        .assessment-form {
-            padding: 30px;
-        }
-        
-        .form-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .form-section h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
             font-weight: 600;
             color: #2c3e50;
         }
         
-        .form-group select,
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        .form-group select:focus,
-        .form-group input:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .generate-btn {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        .calculate-btn {
+            background: #27ae60;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
+            padding: 15px 40px;
             border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.2s;
+            margin-top: 20px;
         }
         
-        .generate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        .calculate-btn:hover {
+            background: #229954;
         }
         
-        .generate-btn:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .quote-output {
-            margin: 20px;
+        .quote-result {
+            background: #ecf0f1;
             padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .quote-result h2 {
+            color: #27ae60;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .quote-breakdown {
             background: white;
+            padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 20px;
         }
         
-        .quote-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            border-radius: 10px;
-            color: white;
-        }
-        
-        .quote-section {
-            margin-bottom: 25px;
-            padding: 20px;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            background: #f8f9fa;
-        }
-        
-        .quote-section h4 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .quote-item {
+        .quote-breakdown p {
+            margin: 10px 0;
+            font-size: 1.1rem;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 8px 0;
-            border-bottom: 1px solid #dee2e6;
         }
         
-        .quote-item:last-child {
-            border-bottom: none;
+        .quote-breakdown .total {
+            font-size: 1.5rem;
             font-weight: bold;
-            color: #2c3e50;
+            color: #27ae60;
+            border-top: 2px solid #27ae60;
+            padding-top: 15px;
+            margin-top: 15px;
         }
         
-        .total-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 10px;
+        .loading {
             text-align: center;
-        }
-        
-        .total-price {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-        
-        .complexity-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-left: 10px;
-        }
-        
-        .complexity-low {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .complexity-medium {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .complexity-high {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .assessment-results {
-            background: #e7f3ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 20px;
+            color: #7f8c8d;
         }
     </style>
 </head>
@@ -363,197 +207,202 @@
             <h1>⚡ Bolt Quotes - Quote Generator</h1>
             <p>Generate professional quotes with uploaded photos</p>
         </div>
-
-        <div class="project-selector">
-            <label for="projectSelect">Select Project:</label>
-            <select id="projectSelect">
-                <option value="">Loading projects...</option>
-            </select>
-            <button class="refresh-btn" onclick="loadProjects()">🔄 Refresh</button>
-        </div>
-
-        <div id="loading" class="loading">
-            Loading project data...
-        </div>
-
-        <div id="error" class="error-message" style="display: none;"></div>
-
-        <div id="customer-info" style="display: none;"></div>
-
-        <div id="photos-section" style="display: none;"></div>
-
-        <div id="assessment-form" style="display: none;">
-            <div class="assessment-form">
-                <div class="form-section">
-                    <h3>Property Information</h3>
-                    
-                    <div class="form-group">
-                        <label for="propertyType">Property Type</label>
-                        <select id="propertyType">
-                            <option value="single">Single Family Home</option>
-                            <option value="townhouse">Townhouse</option>
-                            <option value="condo">Condo</option>
-                            <option value="commercial">Commercial</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="state">State</label>
-                        <select id="state">
-                            <option value="GA">Georgia</option>
-                            <option value="FL">Florida</option>
-                            <option value="AL">Alabama</option>
-                            <option value="TN">Tennessee</option>
-                            <option value="SC">South Carolina</option>
-                            <option value="NC">North Carolina</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="distance">Distance from Panel to Charger Location (feet)</label>
-                        <input type="number" id="distance" value="25" min="5" max="200">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="conduitType">Installation Type</label>
-                        <select id="conduitType">
-                            <option value="surface">Surface Mount (easiest)</option>
-                            <option value="underground">Underground Conduit</option>
-                            <option value="overhead">Overhead/Attic Run</option>
-                        </select>
-                    </div>
+        
+        <div class="content">
+            <!-- Project Selection -->
+            <div class="section">
+                <div class="form-row">
+                    <label for="projectSelect">Select Project:</label>
+                    <select id="projectSelect" onchange="loadProjectDetails()">
+                        <option value="">Loading projects...</option>
+                    </select>
+                    <button class="refresh-btn" onclick="loadProjects()">🔄 Refresh</button>
                 </div>
-
-                <div class="form-section">
-                    <h3>Electrical Panel Assessment</h3>
-                    
-                    <div class="form-group">
-                        <label for="breakerSlots">Available Breaker Slots</label>
-                        <select id="breakerSlots">
-                            <option value="2+">2 or more slots available</option>
-                            <option value="1">1 slot available</option>
-                            <option value="none">No slots available (needs panel upgrade)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="panelAge">Panel Age/Condition</label>
-                        <select id="panelAge">
-                            <option value="new">Modern (less than 15 years)</option>
-                            <option value="medium">Average (15-30 years)</option>
-                            <option value="old">Older (30+ years)</option>
-                        </select>
-                    </div>
+            </div>
+            
+            <!-- Customer Information -->
+            <div class="section" id="customerSection" style="display: none;">
+                <div id="customerInfo" class="customer-info">
+                    <div class="loading">Select a project to view details...</div>
                 </div>
-
-                <div class="form-section">
-                    <h3>Charger Selection</h3>
-                    
-                    <div class="form-group">
-                        <label for="chargerType">EV Charger Type</label>
-                        <select id="chargerType">
-                            <option value="level2-32">Level 2 - 32A (Basic, 7.7kW)</option>
-                            <option value="level2-40">Level 2 - 40A (Standard, 9.6kW)</option>
-                            <option value="level2-48">Level 2 - 48A (Fast, 11.5kW)</option>
-                            <option value="level2-60">Level 2 - 60A (Ultra-Fast, 14.4kW)</option>
-                        </select>
-                    </div>
+            </div>
+            
+            <!-- Uploaded Photos -->
+            <div class="section" id="photosSection" style="display: none;">
+                <h3>📸 Uploaded Photos</h3>
+                <div id="photosGrid" class="photos-grid">
+                    <div class="loading">No photos found for this project</div>
                 </div>
-
-                <div class="form-section">
-                    <h3>Business Settings</h3>
-                    
-                    <div class="form-group">
-                        <label for="markup">Markup Percentage</label>
-                        <select id="markup">
-                            <option value="25">25% - Competitive</option>
-                            <option value="30">30% - Standard</option>
-                            <option value="35">35% - Premium</option>
-                            <option value="40">40% - High-end</option>
-                            <option value="45">45% - Luxury</option>
-                        </select>
-                    </div>
+            </div>
+            
+            <!-- Quote Calculator -->
+            <div class="section" id="calculatorSection" style="display: none;">
+                <h3>💰 Quote Calculator</h3>
+                
+                <div class="form-row">
+                    <label for="propertyType">Property Type:</label>
+                    <select id="propertyType">
+                        <option value="single-family">Single Family Home</option>
+                        <option value="townhouse">Townhouse</option>
+                        <option value="condo">Condo/Apartment</option>
+                        <option value="commercial">Commercial</option>
+                    </select>
                 </div>
-
-                <button class="generate-btn" onclick="generateQuote()">
-                    Generate Professional Quote
-                </button>
+                
+                <div class="form-row">
+                    <label for="location">Install Location:</label>
+                    <select id="location">
+                        <option value="garage-attached">Attached Garage</option>
+                        <option value="garage-detached">Detached Garage</option>
+                        <option value="driveway">Driveway</option>
+                        <option value="exterior-wall">Exterior Wall</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label for="distance">Distance from Panel:</label>
+                    <input type="number" id="distance" placeholder="Distance in feet" value="20">
+                </div>
+                
+                <div class="form-row">
+                    <label for="state">State:</label>
+                    <select id="state">
+                        <option value="GA">Georgia</option>
+                        <option value="FL">Florida</option>
+                        <option value="AL">Alabama</option>
+                        <option value="SC">South Carolina</option>
+                        <option value="NC">North Carolina</option>
+                        <option value="TN">Tennessee</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <label for="panelUpgrade">Panel Upgrade Needed:</label>
+                    <select id="panelUpgrade">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+                
+                <button class="calculate-btn" onclick="generateQuote()">⚡ Generate Quote</button>
+            </div>
+            
+            <!-- Quote Result -->
+            <div class="quote-result" id="quoteResult">
+                <h2>Quote Summary</h2>
+                <div class="quote-breakdown" id="quoteBreakdown">
+                    <!-- Quote details will be inserted here -->
+                </div>
             </div>
         </div>
-
-        <div id="quote-content" class="quote-output" style="display: none;"></div>
     </div>
 
     <script>
+        // Configuration
+        const airtableConfig = {
+            airtableToken: 'YOUR_AIRTABLE_TOKEN_HERE',
+            baseId: 'applWK4PXoo86ajvD'
+        };
+        
+        const BASE_ID = airtableConfig.baseId;
         let currentProject = null;
-        let allProjects = [];
-
+        
         // Load projects on page load
         window.addEventListener('DOMContentLoaded', () => {
             loadProjects();
         });
-
+        
+        // Load all projects from Airtable
         async function loadProjects() {
+            const select = document.getElementById('projectSelect');
+            select.innerHTML = '<option value="">Loading projects...</option>';
+            
             try {
-                document.getElementById('loading').style.display = 'block';
-                document.getElementById('error').style.display = 'none';
+                console.log('Fetching projects from Airtable...');
+                console.log('Using token:', airtableConfig.airtableToken ? 'Token exists' : 'NO TOKEN');
                 
-                const response = await fetch('/api/projects');
-                const data = await response.json();
-
+                const response = await fetch(
+                    `https://api.airtable.com/v0/${BASE_ID}/Projects?sort%5B0%5D%5Bfield%5D=Created%20At&sort%5B0%5D%5Bdirection%5D=desc`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${airtableConfig.airtableToken}`
+                        }
+                    }
+                );
+                
+                console.log('Airtable response status:', response.status);
+                
                 if (!response.ok) {
-                    throw new Error(data.error || 'Failed to load projects');
+                    const error = await response.json();
+                    console.error('Airtable error:', error);
+                    throw new Error(error.error?.message || 'Failed to load projects');
                 }
-
-                allProjects = data.projects;
                 
-                const select = document.getElementById('projectSelect');
+                const data = await response.json();
+                console.log('Projects loaded:', data.records.length);
+                
                 select.innerHTML = '<option value="">-- Select a Project --</option>';
                 
-                allProjects.forEach(project => {
+                data.records.forEach(record => {
+                    const fields = record.fields;
                     const option = document.createElement('option');
-                    option.value = project.id;
-                    const status = project.fields['Status'] || 'Pending';
-                    option.textContent = `${project.fields['Customer Name']} - ${project.fields['Property Address']} (${status})`;
+                    option.value = record.id;
+                    option.textContent = `${fields['Customer Name'] || 'Unnamed'} - ${fields['Property Address'] || 'No Address'} (${fields['Project Status'] || 'Pending'})`;
                     select.appendChild(option);
                 });
-
-                document.getElementById('loading').style.display = 'none';
                 
             } catch (error) {
                 console.error('Error loading projects:', error);
-                document.getElementById('error').textContent = `Error: ${error.message}`;
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('loading').style.display = 'none';
+                select.innerHTML = '<option value="">Error loading projects</option>';
+                alert('Failed to load projects: ' + error.message);
             }
         }
-
-        document.getElementById('projectSelect').addEventListener('change', async (e) => {
-            const projectId = e.target.value;
+        
+        // Load project details
+        async function loadProjectDetails() {
+            const select = document.getElementById('projectSelect');
+            const projectId = select.value;
             
             if (!projectId) {
-                hideAllSections();
+                document.getElementById('customerSection').style.display = 'none';
+                document.getElementById('photosSection').style.display = 'none';
+                document.getElementById('calculatorSection').style.display = 'none';
+                document.getElementById('quoteResult').style.display = 'none';
                 return;
             }
-
-            currentProject = allProjects.find(p => p.id === projectId);
             
-            if (currentProject) {
-                displayProjectDetails(currentProject);
+            try {
+                console.log('Loading project:', projectId);
+                
+                const response = await fetch(
+                    `https://api.airtable.com/v0/${BASE_ID}/Projects/${projectId}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${airtableConfig.airtableToken}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) throw new Error('Failed to load project details');
+                
+                currentProject = await response.json();
+                console.log('Project loaded:', currentProject);
+                console.log('Project status:', currentProject.fields['Project Status']);
+                
+                displayCustomerInfo();
+                loadPhotos();
+                
+                document.getElementById('customerSection').style.display = 'block';
+                document.getElementById('photosSection').style.display = 'block';
+                document.getElementById('calculatorSection').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading project:', error);
+                alert('Failed to load project details');
             }
-        });
-
-        function hideAllSections() {
-            document.getElementById('customer-info').style.display = 'none';
-            document.getElementById('photos-section').style.display = 'none';
-            document.getElementById('assessment-form').style.display = 'none';
-            document.getElementById('quote-content').style.display = 'none';
         }
-
-        function displayProjectDetails(project) {
-            const fields = project.fields;
-            
-            // Display customer info
+        
+        // Display customer info
         function displayCustomerInfo() {
             const fields = currentProject.fields;
             const infoDiv = document.getElementById('customerInfo');
@@ -569,177 +418,167 @@
                 <p><strong>EV Model:</strong> ${fields['EV Model'] || 'N/A'}</p>
                 <p><strong>Project Status:</strong> <span style="color: ${fields['Project Status'] === 'Photos Uploaded' ? '#27ae60' : '#f39c12'}; font-weight: bold;">${fields['Project Status'] || 'Pending'}</span></p>
             `;
-
-            // Display photos
-            displayPhotos(fields['Photos']);
-
-            // Show assessment form
-            document.getElementById('assessment-form').style.display = 'block';
-            document.getElementById('quote-content').style.display = 'none';
-        }
-
-        function displayPhotos(photos) {
-            const photosSection = document.getElementById('photos-section');
             
-            if (!photos || photos.length === 0) {
-                photosSection.innerHTML = `
-                    <div class="photos-section">
-                        <h3>📸 Uploaded Photos</h3>
-                        <div class="no-photos">No photos uploaded yet for this project.</div>
-                    </div>
-                `;
-                photosSection.style.display = 'block';
-                return;
+            // Pre-fill form fields if available
+            if (fields['Property Type']) {
+                const propertyTypeMap = {
+                    'single family': 'single-family',
+                    'single-family': 'single-family',
+                    'townhouse': 'townhouse',
+                    'condo': 'condo',
+                    'condominium': 'condo',
+                    'commercial': 'commercial'
+                };
+                const mappedType = propertyTypeMap[fields['Property Type'].toLowerCase()];
+                if (mappedType) {
+                    document.getElementById('propertyType').value = mappedType;
+                }
             }
-
-            const photoLabels = ['Panel Exterior', 'Panel Interior', 'Breaker Labels', 'Installation Location'];
             
-            const photosHtml = photos.map((photo, index) => `
-                <div class="photo-item" onclick="window.open('${photo.url}', '_blank')">
-                    <img src="${photo.thumbnails?.large?.url || photo.url}" alt="${photoLabels[index] || 'Photo ' + (index + 1)}">
-                    <div class="photo-label">${photoLabels[index] || 'Photo ' + (index + 1)}</div>
-                </div>
-            `).join('');
-
-            photosSection.innerHTML = `
-                <div class="photos-section">
-                    <h3>📸 Uploaded Photos (${photos.length})</h3>
-                    <div class="photos-grid">
-                        ${photosHtml}
-                    </div>
-                </div>
-            `;
-            photosSection.style.display = 'block';
+            if (fields['Install Location']) {
+                const locationMap = {
+                    'garage': 'garage-attached',
+                    'attached garage': 'garage-attached',
+                    'detached garage': 'garage-detached',
+                    'driveway': 'driveway',
+                    'exterior wall': 'exterior-wall'
+                };
+                const mappedLocation = locationMap[fields['Install Location'].toLowerCase()];
+                if (mappedLocation) {
+                    document.getElementById('location').value = mappedLocation;
+                }
+            }
+            
+            // Extract state from address
+            if (fields['Property Address']) {
+                const address = fields['Property Address'];
+                const stateMatch = address.match(/\b(AL|AZ|CA|CO|FL|GA|IL|MA|NY|TX|SC|NC|TN)\b/i);
+                if (stateMatch) {
+                    document.getElementById('state').value = stateMatch[0].toUpperCase();
+                }
+            }
         }
-
+        
+        // Load photos from Photos table
+        async function loadPhotos() {
+            try {
+                console.log('Loading photos for project:', currentProject.id);
+                
+                // Use SEARCH formula to find photos linked to this project
+                const formula = `SEARCH("${currentProject.id}", {Project})`;
+                const response = await fetch(
+                    `https://api.airtable.com/v0/${BASE_ID}/Photos?filterByFormula=${encodeURIComponent(formula)}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${airtableConfig.airtableToken}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    console.error('Photos fetch failed:', response.status);
+                    throw new Error('Failed to load photos');
+                }
+                
+                const data = await response.json();
+                console.log('Photos found:', data.records.length);
+                
+                const photosGrid = document.getElementById('photosGrid');
+                
+                if (data.records.length === 0) {
+                    photosGrid.innerHTML = '<div class="loading">No photos found for this project</div>';
+                    return;
+                }
+                
+                photosGrid.innerHTML = '';
+                
+                data.records.forEach(photo => {
+                    const fields = photo.fields;
+                    if (fields.File && fields.File.length > 0) {
+                        const photoDiv = document.createElement('div');
+                        photoDiv.className = 'photo-item';
+                        photoDiv.innerHTML = `
+                            <img src="${fields.File[0].url}" alt="${fields['Photo Type'] || 'Photo'}">
+                            <p>${fields['Photo Type'] || 'Unknown'}</p>
+                        `;
+                        photosGrid.appendChild(photoDiv);
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                document.getElementById('photosGrid').innerHTML = 
+                    '<div class="loading">Error loading photos</div>';
+            }
+        }
+        
+        // Generate quote
         function generateQuote() {
-            const chargerTypeMap = {
-                'level2-32': { name: 'Level 2 - 32A', amps: 32, cost: 549 },
-                'level2-40': { name: 'Level 2 - 40A', amps: 40, cost: 649 },
-                'level2-48': { name: 'Level 2 - 48A', amps: 48, cost: 749 },
-                'level2-60': { name: 'Level 2 - 60A', amps: 60, cost: 899 }
-            };
-
-            const stateMultipliers = {
-                'GA': { name: 'Georgia', labor: 1.0, materials: 1.0, permit: 1.0 },
-                'FL': { name: 'Florida', labor: 1.15, materials: 1.1, permit: 1.2 },
-                'AL': { name: 'Alabama', labor: 0.95, materials: 0.98, permit: 0.9 },
-                'TN': { name: 'Tennessee', labor: 1.05, materials: 1.02, permit: 1.1 },
-                'SC': { name: 'South Carolina', labor: 1.0, materials: 1.0, permit: 1.05 },
-                'NC': { name: 'North Carolina', labor: 1.08, materials: 1.05, permit: 1.15 }
-            };
-
-            const chargerType = document.getElementById('chargerType').value;
+            const propertyType = document.getElementById('propertyType').value;
+            const location = document.getElementById('location').value;
+            const distance = parseInt(document.getElementById('distance').value) || 20;
             const state = document.getElementById('state').value;
-            const distance = parseInt(document.getElementById('distance').value);
-            const conduitType = document.getElementById('conduitType').value;
-            const breakerSlots = document.getElementById('breakerSlots').value;
-            const panelAge = document.getElementById('panelAge').value;
-            const markupPercent = parseInt(document.getElementById('markup').value);
-
-            const charger = chargerTypeMap[chargerType];
-            const stateData = stateMultipliers[state];
-
-            // Calculate complexity
-            let complexityScore = 0;
-            if (distance > 50) complexityScore += 2;
-            if (distance > 100) complexityScore += 2;
-            if (conduitType === 'underground') complexityScore += 3;
-            if (conduitType === 'overhead') complexityScore += 2;
-            if (breakerSlots === 'none') complexityScore += 4;
-            if (breakerSlots === '1') complexityScore += 1;
-            if (panelAge === 'old') complexityScore += 2;
-
-            let complexityLevel, complexityClass;
-            if (complexityScore <= 3) {
-                complexityLevel = 'Low';
-                complexityClass = 'complexity-low';
-            } else if (complexityScore <= 6) {
-                complexityLevel = 'Medium';
-                complexityClass = 'complexity-medium';
-            } else {
-                complexityLevel = 'High';
-                complexityClass = 'complexity-high';
-            }
-
-            // Calculate materials and labor
-            const materials = [];
-            materials.push({ name: charger.name + ' Charger', cost: charger.cost });
-
-            let laborHours = 4 + (distance / 25);
-
-            const wireGauge = charger.amps <= 32 ? '10 AWG' : charger.amps <= 48 ? '8 AWG' : '6 AWG';
-            const wirePrice = charger.amps <= 32 ? 3.50 : charger.amps <= 48 ? 4.25 : 6.75;
-            const wireCost = (distance + 10) * wirePrice * stateData.materials;
-            materials.push({ name: wireGauge + ' Wire', cost: wireCost });
-
-            const conduitCost = distance * 2.25 * stateData.materials;
-            materials.push({ name: 'EMT Conduit', cost: conduitCost });
-
-            const breakerCost = (charger.amps <= 32 ? 45 : charger.amps <= 48 ? 55 : 125) * stateData.materials;
-            materials.push({ name: charger.amps + 'A Breaker', cost: breakerCost });
-
-            if (conduitType === 'underground') laborHours *= 2.5;
-            else if (conduitType === 'overhead') laborHours *= 1.8;
-
-            if (breakerSlots === 'none') {
-                materials.push({ name: 'Panel Upgrade', cost: 1800 * stateData.materials });
-                laborHours += 8;
-            }
-
-            materials.push({ name: 'Permit & Inspection', cost: 235 * stateData.permit });
-
-            const materialsCost = materials.reduce((sum, item) => sum + item.cost, 0);
-            const laborRate = 95 * stateData.labor;
-            const laborCost = Math.ceil(laborHours) * laborRate;
-            const subtotal = materialsCost + laborCost;
-            const markupAmount = subtotal * (markupPercent / 100);
-            const total = subtotal + markupAmount;
-
-            // Display quote
-            const materialsHtml = materials.map(item => 
-                `<div class="quote-item"><span>${item.name}</span><span>$${item.cost.toFixed(2)}</span></div>`
-            ).join('');
-
-            const quoteHtml = `
-                <div class="quote-header">
-                    <h2>Professional Installation Quote</h2>
-                    <p>EV Charger Installation - ${stateData.name}</p>
-                </div>
-
-                <div class="assessment-results">
-                    <h4>Installation Complexity: <span class="complexity-badge ${complexityClass}">${complexityLevel}</span></h4>
-                    <p><strong>State Adjustments:</strong> Labor ${stateData.labor}x, Materials ${stateData.materials}x, Permits ${stateData.permit}x</p>
-                </div>
-
-                <div class="quote-section">
-                    <h4>Equipment & Materials</h4>
-                    ${materialsHtml}
-                    <div class="quote-item"><span><strong>Materials Total</strong></span><span><strong>$${materialsCost.toFixed(2)}</strong></span></div>
-                </div>
-
-                <div class="quote-section">
-                    <h4>Labor & Installation</h4>
-                    <div class="quote-item"><span>${Math.ceil(laborHours)} hours @ $${Math.round(laborRate)}/hr</span><span>$${laborCost.toFixed(2)}</span></div>
-                </div>
-
-                <div class="quote-section">
-                    <h4>Investment Summary</h4>
-                    <div class="quote-item"><span>Materials & Labor</span><span>$${subtotal.toFixed(2)}</span></div>
-                    <div class="quote-item"><span>Professional Services (${markupPercent}%)</span><span>$${markupAmount.toFixed(2)}</span></div>
-                </div>
-
-                <div class="total-section">
-                    <h3>Total Project Investment</h3>
-                    <div class="total-price">$${total.toFixed(2)}</div>
-                    <p>Professional installation with warranty</p>
-                    <p>Estimated completion: ${Math.ceil(laborHours) <= 8 ? '1 day' : '2 days'}</p>
-                </div>
+            const panelUpgrade = document.getElementById('panelUpgrade').value;
+            
+            // Base pricing
+            let basePrice = 1200;
+            
+            // Property type adjustment
+            const propertyMultipliers = {
+                'single-family': 1.0,
+                'townhouse': 1.1,
+                'condo': 1.2,
+                'commercial': 1.5
+            };
+            basePrice *= propertyMultipliers[propertyType] || 1.0;
+            
+            // Location adjustment
+            const locationCosts = {
+                'garage-attached': 0,
+                'garage-detached': 200,
+                'driveway': 300,
+                'exterior-wall': 250
+            };
+            const locationCost = locationCosts[location] || 0;
+            
+            // Distance cost (conduit + wiring)
+            const distanceCost = Math.max(0, distance - 20) * 15;
+            
+            // State permit cost
+            const permitCosts = {
+                'GA': 150,
+                'FL': 175,
+                'AL': 125,
+                'SC': 140,
+                'NC': 160,
+                'TN': 145
+            };
+            const permitCost = permitCosts[state] || 150;
+            
+            // Panel upgrade
+            const panelUpgradeCost = panelUpgrade === 'yes' ? 2500 : 0;
+            
+            // Materials
+            const materialsCost = 400;
+            
+            // Calculate total
+            const subtotal = basePrice + locationCost + distanceCost + materialsCost + panelUpgradeCost;
+            const total = subtotal + permitCost;
+            
+            // Display result
+            const breakdownDiv = document.getElementById('quoteBreakdown');
+            breakdownDiv.innerHTML = `
+                <p><span>Base Installation:</span><span>$${basePrice.toFixed(2)}</span></p>
+                <p><span>Location Premium:</span><span>$${locationCost.toFixed(2)}</span></p>
+                <p><span>Distance Charge (${distance}ft):</span><span>$${distanceCost.toFixed(2)}</span></p>
+                <p><span>Materials & Hardware:</span><span>$${materialsCost.toFixed(2)}</span></p>
+                ${panelUpgradeCost > 0 ? `<p><span>Panel Upgrade:</span><span>$${panelUpgradeCost.toFixed(2)}</span></p>` : ''}
+                <p><span>Permit (${state}):</span><span>$${permitCost.toFixed(2)}</span></p>
+                <p class="total"><span>Total:</span><span>$${total.toFixed(2)}</span></p>
             `;
-
-            document.getElementById('quote-content').innerHTML = quoteHtml;
-            document.getElementById('quote-content').style.display = 'block';
-            document.getElementById('quote-content').scrollIntoView({ behavior: 'smooth' });
+            
+            document.getElementById('quoteResult').style.display = 'block';
+            document.getElementById('quoteResult').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
