@@ -1,6 +1,13 @@
 // api/upload-photo.js
 // Uses ImgBB for image hosting
 
+// Configure Vercel to parse JSON bodies
+export const config = {
+    api: {
+        bodyParser: true, // Enable automatic body parsing
+    },
+};
+
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,6 +27,11 @@ export default async function handler(req, res) {
     const BASE_ID = 'applWK4PXoo86ajvD';
     const PHOTOS_TABLE = 'Photos';
 
+    console.log('Environment check:', {
+        hasAirtablePAT: !!AIRTABLE_TOKEN,
+        hasImgBBKey: !!IMGBB_API_KEY
+    });
+
     if (!AIRTABLE_TOKEN) {
         console.error('AIRTABLE_PAT not configured');
         return res.status(500).json({ error: 'Missing AIRTABLE_PAT' });
@@ -31,40 +43,44 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Vercel automatically parses JSON bodies
+        console.log('Request body type:', typeof req.body);
+        console.log('Request body keys:', req.body ? Object.keys(req.body) : 'null');
+
         const { projectId, photoType, imageBase64 } = req.body || {};
 
         console.log('Received upload request:', { 
             projectId, 
             photoType, 
             hasImage: !!imageBase64,
-            bodyType: typeof req.body
+            imageLength: imageBase64 ? imageBase64.length : 0
         });
 
         if (!projectId || !photoType || !imageBase64) {
-            console.error('Missing fields:', { 
-                projectId: !!projectId, 
-                photoType: !!photoType, 
-                imageBase64: !!imageBase64 
-            });
+            console.error('Missing fields');
             return res.status(400).json({ 
                 error: 'Missing required fields',
-                received: { projectId: !!projectId, photoType: !!photoType, imageBase64: !!imageBase64 }
+                received: { 
+                    hasProjectId: !!projectId, 
+                    hasPhotoType: !!photoType, 
+                    hasImageBase64: !!imageBase64 
+                }
             });
         }
 
-        console.log('Uploading photo:', { projectId, photoType });
+        console.log('Processing photo upload for project:', projectId);
 
         // Remove the data:image/...;base64, prefix if present
         const base64Data = imageBase64.includes(',') 
             ? imageBase64.split(',')[1] 
             : imageBase64;
 
+        console.log('Base64 data length:', base64Data.length);
+
         // Upload to ImgBB
         const imgbbFormData = new URLSearchParams();
         imgbbFormData.append('image', base64Data);
         
-        console.log('Sending to ImgBB...');
+        console.log('Uploading to ImgBB...');
         const imgbbResponse = await fetch(
             `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
             {
@@ -76,26 +92,25 @@ export default async function handler(req, res) {
             }
         );
 
-        const imgbbText = await imgbbResponse.text();
         console.log('ImgBB response status:', imgbbResponse.status);
-        console.log('ImgBB response:', imgbbText.substring(0, 200));
 
         if (!imgbbResponse.ok) {
-            console.error('ImgBB error:', imgbbText);
-            throw new Error('Failed to upload image to ImgBB: ' + imgbbText);
+            const errorText = await imgbbResponse.text();
+            console.error('ImgBB error:', errorText);
+            throw new Error('Failed to upload to ImgBB: ' + errorText);
         }
 
-        const imgbbData = JSON.parse(imgbbText);
+        const imgbbData = await imgbbResponse.json();
         
         if (!imgbbData.success) {
             console.error('ImgBB upload failed:', imgbbData);
-            throw new Error('ImgBB upload was not successful');
+            throw new Error('ImgBB did not return success');
         }
 
         const imageUrl = imgbbData.data.url;
-        console.log('Image uploaded to:', imageUrl);
+        console.log('Image uploaded successfully to:', imageUrl);
 
-        // Create photo record in Airtable with the image URL
+        // Create photo record in Airtable
         const airtableData = {
             fields: {
                 'Project': [projectId],
@@ -118,14 +133,16 @@ export default async function handler(req, res) {
             }
         );
 
+        console.log('Airtable response status:', airtableResponse.status);
+
         if (!airtableResponse.ok) {
             const errorData = await airtableResponse.json();
             console.error('Airtable error:', errorData);
-            throw new Error('Failed to create photo record in Airtable: ' + JSON.stringify(errorData));
+            throw new Error('Failed to create Airtable record: ' + JSON.stringify(errorData));
         }
 
         const result = await airtableResponse.json();
-        console.log('Photo record created successfully:', result.id);
+        console.log('✅ Photo record created successfully:', result.id);
 
         return res.status(200).json({
             success: true,
@@ -134,11 +151,11 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error('Upload error:', error);
+        console.error('❌ Upload error:', error.message);
+        console.error('Stack:', error.stack);
         return res.status(500).json({
             error: 'Failed to upload photo',
-            message: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            message: error.message
         });
     }
 }
