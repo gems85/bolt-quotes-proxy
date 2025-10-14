@@ -554,37 +554,21 @@
             const fields = project.fields;
             
             // Display customer info
-            const status = fields['Status'] || 'Pending';
-            const statusClass = status.toLowerCase().replace(/ /g, '-');
+        function displayCustomerInfo() {
+            const fields = currentProject.fields;
+            const infoDiv = document.getElementById('customerInfo');
             
-            document.getElementById('customer-info').innerHTML = `
-                <div class="customer-info">
-                    <h3>Customer Information</h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <span class="info-label">Name:</span>
-                            <span class="info-value">${fields['Customer Name'] || 'N/A'}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Email:</span>
-                            <span class="info-value">${fields['Customer Email'] || 'N/A'}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Phone:</span>
-                            <span class="info-value">${fields['Customer Phone'] || 'N/A'}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Address:</span>
-                            <span class="info-value">${fields['Property Address'] || 'N/A'}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Status:</span>
-                            <span class="status-badge status-${statusClass}">${status}</span>
-                        </div>
-                    </div>
-                </div>
+            infoDiv.innerHTML = `
+                <h3>Property Information</h3>
+                <p><strong>Customer Name:</strong> ${fields['Customer Name'] || 'N/A'}</p>
+                <p><strong>Email:</strong> ${fields['Customer Email'] || 'N/A'}</p>
+                <p><strong>Phone:</strong> ${fields['Customer Phone'] || 'N/A'}</p>
+                <p><strong>Property Address:</strong> ${fields['Property Address'] || 'N/A'}</p>
+                <p><strong>Property Type:</strong> ${fields['Property Type'] || 'N/A'}</p>
+                <p><strong>Install Location:</strong> ${fields['Install Location'] || 'N/A'}</p>
+                <p><strong>EV Model:</strong> ${fields['EV Model'] || 'N/A'}</p>
+                <p><strong>Project Status:</strong> <span style="color: ${fields['Project Status'] === 'Photos Uploaded' ? '#27ae60' : '#f39c12'}; font-weight: bold;">${fields['Project Status'] || 'Pending'}</span></p>
             `;
-            document.getElementById('customer-info').style.display = 'block';
 
             // Display photos
             displayPhotos(fields['Photos']);
