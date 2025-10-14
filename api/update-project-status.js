@@ -6,11 +6,11 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const BASE_ID = 'applWK4PXoo86ajvD';
     const PROJECTS_TABLE = 'Projects';
 
-    if (!AIRTABLE_PAT) {
+    if (!AIRTABLE_TOKEN) {
         return res.status(500).json({ error: 'Server configuration error' });
     }
 
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
             {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
+                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
