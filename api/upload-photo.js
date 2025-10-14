@@ -2,6 +2,15 @@
 // Uses ImgBB for image hosting
 
 export default async function handler(req, res) {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -22,27 +31,26 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Parse request body (Vercel doesn't auto-parse JSON)
-        let body;
-        if (typeof req.body === 'string') {
-            body = JSON.parse(req.body);
-        } else if (req.body && typeof req.body === 'object') {
-            body = req.body;
-        } else {
-            // Read raw body
-            const chunks = [];
-            for await (const chunk of req) {
-                chunks.push(chunk);
-            }
-            const rawBody = Buffer.concat(chunks).toString('utf8');
-            body = JSON.parse(rawBody);
-        }
+        // Vercel automatically parses JSON bodies
+        const { projectId, photoType, imageBase64 } = req.body || {};
 
-        const { projectId, photoType, imageBase64 } = body;
+        console.log('Received upload request:', { 
+            projectId, 
+            photoType, 
+            hasImage: !!imageBase64,
+            bodyType: typeof req.body
+        });
 
         if (!projectId || !photoType || !imageBase64) {
-            console.error('Missing fields:', { projectId: !!projectId, photoType: !!photoType, imageBase64: !!imageBase64 });
-            return res.status(400).json({ error: 'Missing required fields' });
+            console.error('Missing fields:', { 
+                projectId: !!projectId, 
+                photoType: !!photoType, 
+                imageBase64: !!imageBase64 
+            });
+            return res.status(400).json({ 
+                error: 'Missing required fields',
+                received: { projectId: !!projectId, photoType: !!photoType, imageBase64: !!imageBase64 }
+            });
         }
 
         console.log('Uploading photo:', { projectId, photoType });
@@ -68,13 +76,16 @@ export default async function handler(req, res) {
             }
         );
 
+        const imgbbText = await imgbbResponse.text();
+        console.log('ImgBB response status:', imgbbResponse.status);
+        console.log('ImgBB response:', imgbbText.substring(0, 200));
+
         if (!imgbbResponse.ok) {
-            const errorText = await imgbbResponse.text();
-            console.error('ImgBB error:', errorText);
-            throw new Error('Failed to upload image to ImgBB');
+            console.error('ImgBB error:', imgbbText);
+            throw new Error('Failed to upload image to ImgBB: ' + imgbbText);
         }
 
-        const imgbbData = await imgbbResponse.json();
+        const imgbbData = JSON.parse(imgbbText);
         
         if (!imgbbData.success) {
             console.error('ImgBB upload failed:', imgbbData);
@@ -110,11 +121,11 @@ export default async function handler(req, res) {
         if (!airtableResponse.ok) {
             const errorData = await airtableResponse.json();
             console.error('Airtable error:', errorData);
-            throw new Error('Failed to create photo record in Airtable');
+            throw new Error('Failed to create photo record in Airtable: ' + JSON.stringify(errorData));
         }
 
         const result = await airtableResponse.json();
-        console.log('Photo record created:', result.id);
+        console.log('Photo record created successfully:', result.id);
 
         return res.status(200).json({
             success: true,
@@ -127,7 +138,7 @@ export default async function handler(req, res) {
         return res.status(500).json({
             error: 'Failed to upload photo',
             message: error.message,
-            stack: error.stack
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 }
