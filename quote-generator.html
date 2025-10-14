@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bolt Quotes - Quote Generator</title>
+    <title>Quote Generator - Bolt Quotes</title>
     <style>
         * {
             margin: 0;
@@ -298,6 +298,9 @@
             <select id="projectSelect" onchange="loadProject()">
                 <option value="">Loading projects...</option>
             </select>
+            <button onclick="refreshProjects()" style="margin-left: 15px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                🔄 Refresh Projects
+            </button>
         </div>
         
         <div id="loadingScreen" class="loading">
@@ -484,6 +487,13 @@
             await loadAllProjects();
         });
         
+        // Refresh projects list
+        async function refreshProjects() {
+            document.getElementById('projectSelect').innerHTML = '<option value="">Refreshing...</option>';
+            await loadAllProjects();
+            alert('Projects refreshed! Select your project again.');
+        }
+        
         // Load Airtable config
         async function loadConfig() {
             try {
@@ -546,33 +556,96 @@
             });
         }
         
-        // Load selected project
+        // Load selected project - FETCH FRESH FROM AIRTABLE
         async function loadProject() {
             const projectId = document.getElementById('projectSelect').value;
             if (!projectId) return;
             
-            currentProject = allProjects.find(p => p.id === projectId);
-            if (!currentProject) return;
+            // Show loading state
+            document.getElementById('customerInfo').innerHTML = '<p>Loading project details...</p>';
             
-            displayCustomerInfo();
-            await loadPhotos();
-            
-            document.getElementById('mainContent').style.display = 'block';
+            try {
+                // Fetch fresh project data from Airtable
+                const response = await fetch(
+                    `https://api.airtable.com/v0/${BASE_ID}/Projects/${projectId}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${airtableConfig.airtableToken}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load project details');
+                }
+                
+                const data = await response.json();
+                currentProject = data;
+                
+                displayCustomerInfo();
+                await loadPhotos();
+                
+                document.getElementById('mainContent').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading project:', error);
+                document.getElementById('customerInfo').innerHTML = 
+                    '<p style="color: red;">Error loading project: ' + error.message + '</p>';
+            }
         }
         
-        // Display customer info
+        // Display customer info and pre-fill form fields
         function displayCustomerInfo() {
             const fields = currentProject.fields;
             const infoDiv = document.getElementById('customerInfo');
             
             infoDiv.innerHTML = `
                 <h3>Customer Information</h3>
-                <p><strong>Name:</strong> ${fields['Customer Name']}</p>
-                <p><strong>Email:</strong> ${fields['Customer Email']}</p>
+                <p><strong>Name:</strong> ${fields['Customer Name'] || 'N/A'}</p>
+                <p><strong>Email:</strong> ${fields['Customer Email'] || 'N/A'}</p>
                 <p><strong>Phone:</strong> ${fields['Customer Phone'] || 'N/A'}</p>
                 <p><strong>Address:</strong> ${fields['Property Address'] || 'N/A'}</p>
-                <p><strong>Status:</strong> ${fields['Status'] || 'Pending'}</p>
+                <p><strong>Status:</strong> <span style="color: ${fields['Status'] === 'Photos Uploaded' ? '#27ae60' : '#f39c12'}; font-weight: bold;">${fields['Status'] || 'Pending'}</span></p>
             `;
+            
+            // Pre-fill form fields if available
+            if (fields['Property Type']) {
+                const propertyTypeMap = {
+                    'single family': 'single-family',
+                    'single-family': 'single-family',
+                    'townhouse': 'townhouse',
+                    'condo': 'condo',
+                    'condominium': 'condo',
+                    'commercial': 'commercial'
+                };
+                const mappedType = propertyTypeMap[fields['Property Type'].toLowerCase()];
+                if (mappedType) {
+                    document.getElementById('propertyType').value = mappedType;
+                }
+            }
+            
+            if (fields['Install Location']) {
+                const locationMap = {
+                    'garage': 'garage-attached',
+                    'attached garage': 'garage-attached',
+                    'detached garage': 'garage-detached',
+                    'driveway': 'driveway',
+                    'exterior wall': 'exterior-wall'
+                };
+                const mappedLocation = locationMap[fields['Install Location'].toLowerCase()];
+                if (mappedLocation) {
+                    document.getElementById('location').value = mappedLocation;
+                }
+            }
+            
+            // Extract state from address
+            if (fields['Property Address']) {
+                const address = fields['Property Address'];
+                const stateMatch = address.match(/\b(AL|AZ|CA|CO|FL|GA|IL|MA|NY|TX)\b/i);
+                if (stateMatch) {
+                    document.getElementById('state').value = stateMatch[0].toUpperCase();
+                }
+            }
         }
         
         // Load photos
@@ -605,6 +678,11 @@
             const photosSection = document.getElementById('photosSection');
             const photosGrid = document.getElementById('photosGrid');
             
+            if (photos.length === 0) {
+                photosSection.style.display = 'none';
+                return;
+            }
+            
             photosGrid.innerHTML = '';
             
             photos.forEach(photo => {
@@ -613,14 +691,18 @@
                     const photoDiv = document.createElement('div');
                     photoDiv.className = 'photo-item';
                     photoDiv.innerHTML = `
-                        <img src="${fields.File[0].url}" alt="${fields['Photo Type']}">
-                        <p>${fields['Photo Type']}</p>
+                        <img src="${fields.File[0].thumbnails?.large?.url || fields.File[0].url}" alt="${fields['Photo Type'] || 'Panel Photo'}">
+                        <p>${fields['Photo Type'] || 'Photo'}</p>
                     `;
                     photosGrid.appendChild(photoDiv);
                 }
             });
             
-            photosSection.style.display = 'block';
+            if (photosGrid.children.length > 0) {
+                photosSection.style.display = 'block';
+            } else {
+                photosSection.style.display = 'none';
+            }
         }
         
         // Generate quote (your original calculation logic)
