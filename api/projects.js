@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     const BASE_ID = 'applWK4PXoo86ajvD';
     const TABLE_NAME = 'Projects';
 
-    if (!AIRTABLE_TOKEN) {
+    if (!AIRTABLE_PAT) {
         return res.status(500).json({ error: 'Airtable API token not configured' });
     }
 
