@@ -6,12 +6,12 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
     const BASE_ID = 'applWK4PXoo86ajvD';
     const PHOTOS_TABLE = 'Photos';
 
-    if (!AIRTABLE_PAT) {
+    if (!AIRTABLE_TOKEN) {
         console.error('AIRTABLE_PAT not configured');
         return res.status(500).json({ error: 'Missing AIRTABLE_PAT' });
     }
@@ -22,13 +22,30 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { projectId, photoType, imageBase64 } = req.body;
+        // Parse request body (Vercel doesn't auto-parse JSON)
+        let body;
+        if (typeof req.body === 'string') {
+            body = JSON.parse(req.body);
+        } else if (req.body && typeof req.body === 'object') {
+            body = req.body;
+        } else {
+            // Read raw body
+            const chunks = [];
+            for await (const chunk of req) {
+                chunks.push(chunk);
+            }
+            const rawBody = Buffer.concat(chunks).toString('utf8');
+            body = JSON.parse(rawBody);
+        }
+
+        const { projectId, photoType, imageBase64 } = body;
 
         if (!projectId || !photoType || !imageBase64) {
+            console.error('Missing fields:', { projectId: !!projectId, photoType: !!photoType, imageBase64: !!imageBase64 });
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        console.log('Uploading to ImgBB...');
+        console.log('Uploading photo:', { projectId, photoType });
 
         // Remove the data:image/...;base64, prefix if present
         const base64Data = imageBase64.includes(',') 
@@ -39,6 +56,7 @@ export default async function handler(req, res) {
         const imgbbFormData = new URLSearchParams();
         imgbbFormData.append('image', base64Data);
         
+        console.log('Sending to ImgBB...');
         const imgbbResponse = await fetch(
             `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
             {
@@ -76,12 +94,13 @@ export default async function handler(req, res) {
             }
         };
 
+        console.log('Creating Airtable record...');
         const airtableResponse = await fetch(
             `https://api.airtable.com/v0/${BASE_ID}/${PHOTOS_TABLE}`,
             {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
+                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(airtableData)
@@ -107,7 +126,8 @@ export default async function handler(req, res) {
         console.error('Upload error:', error);
         return res.status(500).json({
             error: 'Failed to upload photo',
-            message: error.message
+            message: error.message,
+            stack: error.stack
         });
     }
 }
