@@ -1,93 +1,101 @@
 // api/upload-photo.js
-// Handles photo uploads to Airtable Photos table
-// Uses ImgBB to host images (Airtable needs URLs for attachments)
-
-export const config = {
-    api: {
-        bodyParser: {
-            sizeLimit: '10mb',
-        },
-    },
-};
+// Uses ImgBB for image hosting
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-    const IMGBB_API_KEY = process.env.IMGBB_API_KEY; // Free image hosting
+    const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+    const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
     const BASE_ID = 'applWK4PXoo86ajvD';
     const PHOTOS_TABLE = 'Photos';
 
-    if (!AIRTABLE_TOKEN) {
-        return res.status(500).json({ error: 'Server configuration error' });
+    if (!AIRTABLE_PAT) {
+        console.error('AIRTABLE_PAT not configured');
+        return res.status(500).json({ error: 'Missing AIRTABLE_PAT' });
+    }
+
+    if (!IMGBB_API_KEY) {
+        console.error('IMGBB_API_KEY not configured');
+        return res.status(500).json({ error: 'Missing IMGBB_API_KEY' });
     }
 
     try {
         const { projectId, photoType, imageBase64 } = req.body;
 
-        // Upload image to ImgBB (or any free image host)
-        let imageUrl;
-        
-        if (IMGBB_API_KEY) {
-            // Use ImgBB if API key is configured
-            const formData = new FormData();
-            formData.append('image', imageBase64.split(',')[1]); // Remove data:image/... prefix
-            
-            const imgbbResponse = await fetch(
-                `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
-                {
-                    method: 'POST',
-                    body: formData
-                }
-            );
-
-            const imgbbData = await imgbbResponse.json();
-            if (!imgbbData.success) {
-                throw new Error('Failed to upload image to hosting service');
-            }
-            
-            imageUrl = imgbbData.data.url;
-        } else {
-            // Fallback: Store base64 temporarily (not ideal for production)
-            // You should set up ImgBB or Cloudinary API key
-            imageUrl = imageBase64;
+        if (!projectId || !photoType || !imageBase64) {
+            return res.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Create photo record in Airtable with image URL
+        console.log('Uploading to ImgBB...');
+
+        // Remove the data:image/...;base64, prefix if present
+        const base64Data = imageBase64.includes(',') 
+            ? imageBase64.split(',')[1] 
+            : imageBase64;
+
+        // Upload to ImgBB
+        const imgbbFormData = new URLSearchParams();
+        imgbbFormData.append('image', base64Data);
+        
+        const imgbbResponse = await fetch(
+            `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: imgbbFormData
+            }
+        );
+
+        if (!imgbbResponse.ok) {
+            const errorText = await imgbbResponse.text();
+            console.error('ImgBB error:', errorText);
+            throw new Error('Failed to upload image to ImgBB');
+        }
+
+        const imgbbData = await imgbbResponse.json();
+        
+        if (!imgbbData.success) {
+            console.error('ImgBB upload failed:', imgbbData);
+            throw new Error('ImgBB upload was not successful');
+        }
+
+        const imageUrl = imgbbData.data.url;
+        console.log('Image uploaded to:', imageUrl);
+
+        // Create photo record in Airtable with the image URL
         const airtableData = {
             fields: {
                 'Project': [projectId],
                 'Photo Type': photoType,
                 'Uploaded By': 'Homeowner',
-                'Photos': [
-                    {
-                        url: imageUrl
-                    }
-                ]
+                'Photos': [{ url: imageUrl }]
             }
         };
 
-        const response = await fetch(
+        const airtableResponse = await fetch(
             `https://api.airtable.com/v0/${BASE_ID}/${PHOTOS_TABLE}`,
             {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(airtableData)
             }
         );
 
-        if (!response.ok) {
-            const errorData = await response.json();
+        if (!airtableResponse.ok) {
+            const errorData = await airtableResponse.json();
             console.error('Airtable error:', errorData);
             throw new Error('Failed to create photo record in Airtable');
         }
 
-        const result = await response.json();
+        const result = await airtableResponse.json();
+        console.log('Photo record created:', result.id);
 
         return res.status(200).json({
             success: true,
