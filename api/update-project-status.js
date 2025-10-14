@@ -1,58 +1,61 @@
+// api/update-project-status.js
+// Updates the project status after photos are uploaded
+
 export default async function handler(req, res) {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-    
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
-    
+
+    const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+    const BASE_ID = 'applWK4PXoo86ajvD';
+    const PROJECTS_TABLE = 'Projects';
+
+    if (!AIRTABLE_PAT) {
+        return res.status(500).json({ error: 'Server configuration error' });
+    }
+
     try {
         const { projectId, status } = req.body;
-        
+
         if (!projectId || !status) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
-        
-        const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-        const BASE_ID = 'applWK4PXoo86ajvD';
-        
+
+        // Update project status in Airtable
         const response = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/Projects/${projectId}`,
+            `https://api.airtable.com/v0/${BASE_ID}/${PROJECTS_TABLE}/${projectId}`,
             {
                 method: 'PATCH',
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     fields: {
-                        'Status': status
+                        'Project Status': status
                     }
                 })
             }
         );
-        
+
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'Failed to update status');
+            const errorData = await response.json();
+            console.error('Airtable error:', errorData);
+            throw new Error('Failed to update project status');
         }
-        
+
         const result = await response.json();
-        res.status(200).json({ success: true, record: result });
-        
+
+        return res.status(200).json({
+            success: true,
+            project: result
+        });
+
     } catch (error) {
         console.error('Status update error:', error);
-        res.status(500).json({ 
-            error: 'Update failed', 
-            message: error.message 
+        return res.status(500).json({
+            error: 'Failed to update project status',
+            message: error.message
         });
     }
 }
