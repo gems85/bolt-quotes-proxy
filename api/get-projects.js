@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     }
     
     try {
-        const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+        const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
         const BASE_ID = 'applWK4PXoo86ajvD';
         
         const response = await fetch(
