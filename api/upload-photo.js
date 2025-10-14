@@ -17,18 +17,37 @@ const PHOTOS_TABLE = 'Photos';
 // Helper to read request body
 async function readBody(req) {
     return new Promise((resolve, reject) => {
-        let body = '';
+        const chunks = [];
+        let totalLength = 0;
+        
         req.on('data', chunk => {
-            body += chunk.toString();
+            chunks.push(chunk);
+            totalLength += chunk.length;
+            console.log('Received chunk, size:', chunk.length, 'Total so far:', totalLength);
         });
+        
         req.on('end', () => {
             try {
-                resolve(JSON.parse(body));
+                const buffer = Buffer.concat(chunks);
+                const bodyString = buffer.toString('utf8');
+                
+                console.log('Body complete. Total size:', totalLength);
+                console.log('Body start (first 100 chars):', bodyString.substring(0, 100));
+                console.log('Body end (last 100 chars):', bodyString.substring(bodyString.length - 100));
+                
+                const parsed = JSON.parse(bodyString);
+                resolve(parsed);
             } catch (e) {
+                console.error('JSON parse error:', e.message);
+                console.error('Failed to parse body');
                 reject(e);
             }
         });
-        req.on('error', reject);
+        
+        req.on('error', (err) => {
+            console.error('Request stream error:', err);
+            reject(err);
+        });
     });
 }
 
@@ -47,12 +66,11 @@ export default async function handler(req, res) {
     }
 
     console.log('=== Upload Photo API Called ===');
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('Content-Length:', req.headers['content-length']);
 
     if (!AIRTABLE_PAT || !IMGBB_API_KEY) {
-        console.error('Missing environment variables:', {
-            hasAirtablePAT: !!AIRTABLE_PAT,
-            hasImgBBKey: !!IMGBB_API_KEY
-        });
+        console.error('Missing environment variables');
         return res.status(500).json({ error: 'Server configuration error' });
     }
 
@@ -60,7 +78,7 @@ export default async function handler(req, res) {
         console.log('Reading request body...');
         const body = await readBody(req);
         
-        console.log('Body parsed successfully');
+        console.log('✅ Body parsed successfully');
         console.log('Body keys:', Object.keys(body));
 
         const { projectId, photoType, imageBase64 } = body;
@@ -179,10 +197,14 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('❌ Upload error:', error.message);
-        console.error('Stack:', error.stack);
+        console.error('Error name:', error.name);
+        if (error.stack) {
+            console.error('Stack:', error.stack.split('\n').slice(0, 3).join('\n'));
+        }
         return res.status(500).json({
             error: 'Failed to upload photo',
-            message: error.message
+            message: error.message,
+            type: error.name
         });
     }
 }
