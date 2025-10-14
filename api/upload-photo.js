@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         hasImgBBKey: !!IMGBB_API_KEY
     });
 
-    if (!AIRTABLE_PAT) {
+    if (!AIRTABLE_TOKEN) {
         console.error('AIRTABLE_PAT not configured');
         return res.status(500).json({ error: 'Missing AIRTABLE_PAT' });
     }
