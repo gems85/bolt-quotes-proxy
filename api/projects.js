@@ -20,7 +20,7 @@ export default async function handler(req, res) {
             `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}?view=Grid%20view`,
             {
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_PAT}`,
+                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
                     'Content-Type': 'application/json'
                 }
             }
