@@ -1,14 +1,36 @@
 // api/upload-photo.js
 // Uses ImgBB for image hosting
 
-// Configure Vercel to parse JSON bodies with larger size limit
+// Disable automatic body parsing - we'll do it manually
 export const config = {
     api: {
-        bodyParser: {
-            sizeLimit: '10mb', // Increase from default 4.5mb to handle base64 images
-        },
+        bodyParser: false,
     },
 };
+
+// Get environment variables at module level
+const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
+const BASE_ID = 'applWK4PXoo86ajvD';
+const PHOTOS_TABLE = 'Photos';
+
+// Helper to read request body
+async function readBody(req) {
+    return new Promise((resolve, reject) => {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            try {
+                resolve(JSON.parse(body));
+            } catch (e) {
+                reject(e);
+            }
+        });
+        req.on('error', reject);
+    });
+}
 
 export default async function handler(req, res) {
     // Enable CORS
@@ -24,36 +46,24 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-    const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
-    const BASE_ID = 'applWK4PXoo86ajvD';
-    const PHOTOS_TABLE = 'Photos';
-
     console.log('=== Upload Photo API Called ===');
-    console.log('Environment check:', {
-        hasAirtablePAT: !!AIRTABLE_TOKEN,
-        hasImgBBKey: !!IMGBB_API_KEY
-    });
 
-    if (!AIRTABLE_TOKEN) {
-        console.error('AIRTABLE_PAT not configured');
-        return res.status(500).json({ error: 'Missing AIRTABLE_PAT' });
-    }
-
-    if (!IMGBB_API_KEY) {
-        console.error('IMGBB_API_KEY not configured');
-        return res.status(500).json({ error: 'Missing IMGBB_API_KEY' });
+    if (!AIRTABLE_TOKEN || !IMGBB_API_KEY) {
+        console.error('Missing environment variables:', {
+            hasAirtablePAT: !!AIRTABLE_TOKEN,
+            hasImgBBKey: !!IMGBB_API_KEY
+        });
+        return res.status(500).json({ error: 'Server configuration error' });
     }
 
     try {
-        console.log('Request body exists:', !!req.body);
-        console.log('Request body type:', typeof req.body);
+        console.log('Reading request body...');
+        const body = await readBody(req);
         
-        if (req.body) {
-            console.log('Request body keys:', Object.keys(req.body));
-        }
+        console.log('Body parsed successfully');
+        console.log('Body keys:', Object.keys(body));
 
-        const { projectId, photoType, imageBase64 } = req.body || {};
+        const { projectId, photoType, imageBase64 } = body;
 
         console.log('Extracted values:', { 
             projectId: projectId || 'MISSING', 
