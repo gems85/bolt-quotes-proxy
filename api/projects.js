@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
     try {
         const response = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}?view=Grid%20view`,
+            `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}?view=Default%20view`,
             {
                 headers: {
                     'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
