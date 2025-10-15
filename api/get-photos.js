@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Project ID required' });
     }
     
-    const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const BASE_ID = 'applWK4PXoo86ajvD';
     
     if (!AIRTABLE_TOKEN) {
