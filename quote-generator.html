@@ -527,7 +527,7 @@
                 
                 currentProject = await response.json();
                 
-                displayProjectInfo();
+                displayProjectInfo(); await debugPhotos(); //Temporary debug
                 loadPhotos();
                 
                 document.getElementById('mainContent').style.display = 'grid';
@@ -584,45 +584,85 @@
             }
         }
         
-        // Load photos
-        async function loadPhotos() {
-            const photosGrid = document.getElementById('photosGrid');
-            photosGrid.innerHTML = '<div class="loading">Loading photos...</div>';
-            
-            try {
-                const response = await fetch(`/api/get-photos?projectId=${currentProject.id}`);
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load photos');
-                }
-                
-                const data = await response.json();
-                
-                if (data.records.length === 0) {
-                    photosGrid.innerHTML = '<div class="loading">No photos available</div>';
-                    return;
-                }
-                
-                photosGrid.innerHTML = '';
-                
-                data.records.forEach(photo => {
-                    const fields = photo.fields;
-                    if (fields.File && fields.File.length > 0) {
-                        const photoCard = document.createElement('div');
-                        photoCard.className = 'photo-card';
-                        photoCard.innerHTML = `
-                            <img src="${fields.File[0].url}" alt="${fields['Photo Type'] || 'Photo'}">
-                            <div class="photo-label">${fields['Photo Type'] || 'Unknown'}</div>
-                        `;
-                        photosGrid.appendChild(photoCard);
+            // Load photos
+            async function loadPhotos() {
+                const photosGrid = document.getElementById('photosGrid');
+                photosGrid.innerHTML = '<div class="loading">Loading photos...</div>';
+    
+                try {
+                    const response = await fetch(`/api/get-photos?projectId=${currentProject.id}`);
+        
+                    if (!response.ok) {
+                        throw new Error(`Failed to load photos: ${response.status}`);
                     }
-                });
+        
+                    const data = await response.json();
+                    console.log('Photos API response:', data); // Debug log
+        
+                    // Check if we have records and they contain photos
+                    if (!data.records || data.records.length === 0) {
+                    photosGrid.innerHTML = '<div class="loading">No photos available for this project</div>';
+                    return;
+                    }
+        
+                    let hasPhotos = false;
+                    photosGrid.innerHTML = '';
+        
+                    data.records.forEach(photo => {
+                        const fields = photo.fields;
+                        console.log('Photo fields:', fields); // Debug log
+            
+                        // Check for various possible file field names
+                        const fileField = fields.File || fields.Files || fields.Photo || fields.Photos || fields.Attachment || fields.Attachments;
+            
+                        if (fileField && fileField.length > 0) {
+                            hasPhotos = true;
+                            const file = fileField[0];
+                            const photoUrl = file.url || file.thumbnails?.large?.url || file.thumbnails?.small?.url;
+                            const photoType = fields['Photo Type'] || fields.Type || fields.Description || 'Project Photo';
                 
-            } catch (error) {
-                console.error('Error loading photos:', error);
-                photosGrid.innerHTML = '<div class="loading">Error loading photos</div>';
+                            if (photoUrl) {
+                                const photoCard = document.createElement('div');
+                                photoCard.className = 'photo-card';
+                                photoCard.innerHTML = `
+                                    <img src="${photoUrl}" alt="${photoType}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'padding:20px; text-align:center;\\'>Failed to load image</div>';">
+                                    <div class="photo-label">${photoType}</div>
+                    `;
+                                photosGrid.appendChild(photoCard);
+                            }
+                        }
+                    });
+        
+                    if (!hasPhotos) {
+                        photosGrid.innerHTML = '<div class="loading">No photos found in project records</div>';
+                    }
+        
+                } catch (error) {
+                    console.error('Error loading photos:', error);
+                    photosGrid.innerHTML = `<div class="loading">Error loading photos: ${error.message}</div>`;
+                }
             }
-        }
+
+            // Debug function to check API response
+            async function debugPhotos() {
+                if (!currentProject) return;
+    
+                try {
+                    const response = await fetch(`/api/get-photos?projectId=${currentProject.id}`);
+                    const data = await response.json();
+                    console.log('DEBUG - Full photos response:', data);
+        
+                    if (data.records && data.records.length > 0) {
+                        data.records.forEach((record, index) => {
+                            console.log(`DEBUG - Record ${index}:`, record);
+                            console.log(`DEBUG - Record ${index} fields:`, record.fields);
+                        });
+                }
+                } catch (error) {
+                    console.error('DEBUG - Error:', error);
+                }
+            }
+        
         
         // Update project status
         async function updateProjectStatus() {
