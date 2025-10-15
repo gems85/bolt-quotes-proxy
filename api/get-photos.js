@@ -28,8 +28,10 @@ export default async function handler(req, res) {
             throw new Error('AIRTABLE_TOKEN not configured');
         }
         
-        // Use SEARCH formula to find photos linked to this project
-        const formula = `SEARCH("${projectId}", {Project})`;
+        // Use FIND() with ARRAYJOIN() for linked record fields
+        const formula = `FIND("${projectId}", ARRAYJOIN({Project}, ","))`;
+        
+        console.log('Querying photos with formula:', formula);
         
         const response = await fetch(
             `https://api.airtable.com/v0/${BASE_ID}/Photos?filterByFormula=${encodeURIComponent(formula)}`,
@@ -48,6 +50,7 @@ export default async function handler(req, res) {
         }
         
         const data = await response.json();
+        console.log('Photos found:', data.records.length);
         
         res.status(200).json(data);
         
