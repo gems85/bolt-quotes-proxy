@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-    // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -28,13 +27,11 @@ export default async function handler(req, res) {
             throw new Error('AIRTABLE_TOKEN not configured');
         }
         
-        // Use FIND() with ARRAYJOIN() for linked record fields
-        const formula = `FIND("${projectId}", ARRAYJOIN({Project}, ","))`;
+        console.log('Fetching project first to get photo IDs...');
         
-        console.log('Querying photos with formula:', formula);
-        
-        const response = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/Photos?filterByFormula=${encodeURIComponent(formula)}`,
+        // Step 1: Get the project to retrieve photo IDs
+        const projectResponse = await fetch(
+            `https://api.airtable.com/v0/${BASE_ID}/Projects/${projectId}`,
             {
                 headers: {
                     'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
@@ -43,16 +40,37 @@ export default async function handler(req, res) {
             }
         );
         
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Airtable error:', errorText);
-            throw new Error(`Airtable API error: ${response.status}`);
+        if (!projectResponse.ok) {
+            throw new Error(`Failed to fetch project: ${projectResponse.status}`);
         }
         
-        const data = await response.json();
-        console.log('Photos found:', data.records.length);
+        const projectData = await projectResponse.json();
+        const photoIds = projectData.fields.Photos || [];
         
-        res.status(200).json(data);
+        console.log('Photo IDs from project:', photoIds);
+        
+        if (photoIds.length === 0) {
+            return res.status(200).json({ records: [] });
+        }
+        
+        // Step 2: Fetch each photo by ID
+        const photoPromises = photoIds.map(photoId =>
+            fetch(
+                `https://api.airtable.com/v0/${BASE_ID}/Photos/${photoId}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            ).then(res => res.json())
+        );
+        
+        const photos = await Promise.all(photoPromises);
+        
+        console.log('Photos fetched:', photos.length);
+        
+        res.status(200).json({ records: photos });
         
     } catch (error) {
         console.error('Error loading photos:', error);
@@ -62,3 +80,15 @@ export default async function handler(req, res) {
         });
     }
 }
+```
+
+**Key indicator the new code is running:** The logs should say:
+```
+Fetching project first to get photo IDs...
+Photo IDs from project: [...]
+Photos fetched: 4
+```
+
+NOT:
+```
+Querying photos with formula: FIND(...)
