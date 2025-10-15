@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         return;
     }
     
-    var AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
+    var AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     var BASE_ID = 'applWK4PXoo86ajvD';
     
     if (!AIRTABLE_TOKEN) {
