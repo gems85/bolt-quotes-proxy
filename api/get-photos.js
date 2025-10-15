@@ -27,8 +27,9 @@ export default async function handler(req, res) {
             throw new Error('AIRTABLE_TOKEN not configured');
         }
         
-        console.log('Fetching project to get photo IDs');
+        console.log('Fetching project first to get photo IDs...');
         
+        // Step 1: Get the project to retrieve photo IDs
         const projectResponse = await fetch(
             `https://api.airtable.com/v0/${BASE_ID}/Projects/${projectId}`,
             {
@@ -46,12 +47,13 @@ export default async function handler(req, res) {
         const projectData = await projectResponse.json();
         const photoIds = projectData.fields.Photos || [];
         
-        console.log('Photo IDs:', photoIds);
+        console.log('Photo IDs from project:', photoIds);
         
         if (photoIds.length === 0) {
             return res.status(200).json({ records: [] });
         }
         
+        // Step 2: Fetch each photo by ID
         const photoPromises = photoIds.map(photoId =>
             fetch(
                 `https://api.airtable.com/v0/${BASE_ID}/Photos/${photoId}`,
@@ -61,7 +63,7 @@ export default async function handler(req, res) {
                         'Content-Type': 'application/json'
                     }
                 }
-            ).then(response => response.json())
+            ).then(res => res.json())
         );
         
         const photos = await Promise.all(photoPromises);
@@ -80,32 +82,22 @@ export default async function handler(req, res) {
 }
 ```
 
----
+**What this does differently:**
+1. Fetches the project record first
+2. Gets the photo IDs from the project's `Photos` field
+3. Fetches each photo individually by ID
+4. Returns all photos
 
-## 📝 **Steps to Update:**
-
-1. Go to GitHub: `bolt-quotes-proxy/api/get-photos.js`
-2. Click **pencil icon** to edit
-3. **Select ALL** (Ctrl+A)
-4. **Delete everything**
-5. **Copy the code above** (use the copy button in the code block)
-6. **Paste** into the empty file
-7. **Scroll through** to make sure it looks correct - no weird characters
-8. **Commit changes**
-9. Wait for Vercel deployment (1-2 min)
-10. Test again
+This bypasses the formula query issue entirely.
 
 ---
 
-## ✅ **Verification:**
+## 🚀 **Deploy and Test:**
 
-After deployment, the Vercel logs should show:
+1. Replace `/api/get-photos.js` in GitHub with the code above
+2. Wait for Vercel deployment (1-2 min)
+3. Test the quote generator again
+4. Check the Vercel logs - you should see:
 ```
-Fetching project to get photo IDs
-Photo IDs: [...]
-Photos fetched: 4
-```
-
-**NOT:**
-```
-SyntaxError: Unexpected identifier
+   Photo IDs from project: [...]
+   Photos fetched: 4
