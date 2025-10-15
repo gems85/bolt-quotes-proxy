@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+    // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -23,22 +24,31 @@ export default async function handler(req, res) {
         const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
         const BASE_ID = 'applWK4PXoo86ajvD';
         
+        if (!AIRTABLE_TOKEN) {
+            throw new Error('AIRTABLE_TOKEN not configured');
+        }
+        
+        // Use SEARCH formula to find photos linked to this project
         const formula = `SEARCH("${projectId}", {Project})`;
+        
         const response = await fetch(
             `https://api.airtable.com/v0/${BASE_ID}/Photos?filterByFormula=${encodeURIComponent(formula)}`,
             {
                 headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`
+                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                    'Content-Type': 'application/json'
                 }
             }
         );
         
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.error?.message || 'Failed to load photos');
+            const errorText = await response.text();
+            console.error('Airtable error:', errorText);
+            throw new Error(`Airtable API error: ${response.status}`);
         }
         
         const data = await response.json();
+        
         res.status(200).json(data);
         
     } catch (error) {
