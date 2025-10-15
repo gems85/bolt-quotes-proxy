@@ -526,9 +526,10 @@
                 }
                 
                 currentProject = await response.json();
+                console.log('Current project:', currentProject); //Debug log
                 
-                displayProjectInfo(); await debugPhotos(); //Temporary debug
-                loadPhotos();
+                displayProjectInfo();
+                await loadPhotos(); //Ensure this is awaited
                 
                 document.getElementById('mainContent').style.display = 'grid';
                 
