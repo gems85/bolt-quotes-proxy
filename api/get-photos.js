@@ -82,13 +82,22 @@ export default async function handler(req, res) {
 }
 ```
 
-**Key indicator the new code is running:** The logs should say:
-```
-Fetching project first to get photo IDs...
-Photo IDs from project: [...]
-Photos fetched: 4
-```
+**What this does differently:**
+1. Fetches the project record first
+2. Gets the photo IDs from the project's `Photos` field
+3. Fetches each photo individually by ID
+4. Returns all photos
 
-NOT:
+This bypasses the formula query issue entirely.
+
+---
+
+## 🚀 **Deploy and Test:**
+
+1. Replace `/api/get-photos.js` in GitHub with the code above
+2. Wait for Vercel deployment (1-2 min)
+3. Test the quote generator again
+4. Check the Vercel logs - you should see:
 ```
-Querying photos with formula: FIND(...)
+   Photo IDs from project: [...]
+   Photos fetched: 4
