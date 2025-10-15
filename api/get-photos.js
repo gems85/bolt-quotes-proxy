@@ -13,13 +13,13 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
     
-    const projectId = req.query.projectId;
+    const projectRecordId = req.query.projectId;
     
-    if (!projectId) {
+    if (!projectRecordId) {
         return res.status(400).json({ error: 'Project ID required' });
     }
     
-    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
+    const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
     const BASE_ID = 'applWK4PXoo86ajvD';
     
     if (!AIRTABLE_TOKEN) {
@@ -27,10 +27,11 @@ export default async function handler(req, res) {
     }
     
     try {
-        console.log('Fetching project:', projectId);
+        console.log('Step 1: Fetching project record:', projectRecordId);
         
+        // Get the project to find the Project ID number
         const projectRes = await fetch(
-            'https://api.airtable.com/v0/' + BASE_ID + '/Projects/' + projectId,
+            'https://api.airtable.com/v0/' + BASE_ID + '/Projects/' + projectRecordId,
             {
                 headers: {
                     'Authorization': 'Bearer ' + AIRTABLE_TOKEN,
@@ -44,36 +45,40 @@ export default async function handler(req, res) {
         }
         
         const project = await projectRes.json();
-        const photoIds = project.fields.Photos || [];
+        const projectIdNumber = project.fields['Project ID'];
         
-        console.log('Photo IDs:', photoIds.length);
+        console.log('Step 2: Project ID number:', projectIdNumber);
         
-        if (photoIds.length === 0) {
+        if (!projectIdNumber) {
             return res.status(200).json({ records: [] });
         }
         
-        const photos = [];
+        // Query Photos table by Project ID number
+        const formula = '{Project ID} = ' + projectIdNumber;
         
-        for (const photoId of photoIds) {
-            const photoRes = await fetch(
-                'https://api.airtable.com/v0/' + BASE_ID + '/Photos/' + photoId,
-                {
-                    headers: {
-                        'Authorization': 'Bearer ' + AIRTABLE_TOKEN,
-                        'Content-Type': 'application/json'
-                    }
+        console.log('Step 3: Querying photos with formula:', formula);
+        
+        const photosRes = await fetch(
+            'https://api.airtable.com/v0/' + BASE_ID + '/Photos?filterByFormula=' + encodeURIComponent(formula),
+            {
+                headers: {
+                    'Authorization': 'Bearer ' + AIRTABLE_TOKEN,
+                    'Content-Type': 'application/json'
                 }
-            );
-            
-            if (photoRes.ok) {
-                const photo = await photoRes.json();
-                photos.push(photo);
             }
+        );
+        
+        if (!photosRes.ok) {
+            const errorText = await photosRes.text();
+            console.error('Photos query failed:', errorText);
+            throw new Error('Failed to fetch photos: ' + photosRes.status);
         }
         
-        console.log('Fetched photos:', photos.length);
+        const data = await photosRes.json();
         
-        return res.status(200).json({ records: photos });
+        console.log('Step 4: Photos found:', data.records.length);
+        
+        return res.status(200).json(data);
         
     } catch (error) {
         console.error('Error:', error.message);
@@ -85,37 +90,27 @@ export default async function handler(req, res) {
 }
 ```
 
-**Key differences in this version:**
-- Uses string concatenation instead of template literals (avoids encoding issues)
-- Simpler destructuring
-- Uses a `for` loop instead of `Promise.all()` (easier to debug)
-- More explicit error handling
+---
+
+## 🎯 **What This Does:**
+
+1. Gets the project record by Airtable ID (e.g., `recsd0x6NHRu6yuFR`)
+2. Extracts the "Project ID" number field (e.g., `8`)
+3. Queries the Photos table where `{Project ID} = 8`
+4. Returns all matching photos
 
 ---
 
-## 📝 **Update Steps:**
+## 🚀 **Deploy and Test:**
 
-1. Go to GitHub: `bolt-quotes-proxy/api/get-photos.js`
-2. Click **Edit** (pencil icon)
-3. **Select ALL** (Ctrl+A or Cmd+A)
-4. **Delete**
-5. **Copy the code above** - make sure you get it all
-6. **Paste** into the empty file
-7. **Commit changes**: "Fix syntax error in get-photos"
-8. Wait 2 minutes for Vercel deployment
-9. Test again
+1. Update `/api/get-photos.js` in GitHub
+2. Commit changes
+3. Wait 2 minutes for Vercel deployment
+4. Test the quote generator
 
----
-
-## 🎯 **Expected Result:**
-
-After deployment, Vercel logs should show:
+**Expected Vercel logs:**
 ```
-Fetching project: recsd0x6NHRu6yuFR
-Photo IDs: 4
-Fetched photos: 4
-```
-
-**NOT:**
-```
-SyntaxError: Unexpected identifier 'Photos'
+Step 1: Fetching project record: recsd0x6NHRu6yuFR
+Step 2: Project ID number: 8
+Step 3: Querying photos with formula: {Project ID} = 8
+Step 4: Photos found: 4
