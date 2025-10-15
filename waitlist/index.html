@@ -509,7 +509,7 @@
 	</div>
 	            
 	<p class="social-proof">
-	        Join <span id="waitlistCount" class="loading">...</span> electricians already on the waitlist
+	        <p class-"electrician-count">Join <span id="waitlistCount" class="loading">...</span> electricians already on the waitlist</p>
 	            </p>
                </div>
         </section>
@@ -1078,18 +1078,29 @@
                 </div>
             `;
 
-            // Update spots remaining
-            const spotsElement = document.querySelector('.spots-remaining');
-            if (spotsElement) {
-                const currentNumber = parseInt(spotsElement.textContent.match(/\d+/)[0]);
-                if (currentNumber > 0) {
-                    spotsElement.textContent = `⏰ ${currentNumber - 1} of 100 Founding Member Spots Remaining`;
-                }
-            }
+            // Update spots remaining in BOTH locations
+			const spotsElements = document.querySelectorAll('.spots-remaining');
+			spotsElements.forEach(spotsElement => {
+    			const match = spotsElement.textContent.match(/\d+/);
+    			if (match) {
+        			const currentNumber = parseInt(match[0]);
+        			if (currentNumber > 0) {
+            			spotsElement.textContent = '⏰ ' + (currentNumber - 1) + ' of 100 Founding Member Spots Remaining';
+        			}
+    			}
+			});
 
-        } catch (error) {
-            console.error('Error submitting form:', error);
-            alert('Error: ' + error.message + '\n\nPlease try again or contact support.');
+			// Update the top counter "Join X electricians"
+			const topCounter = document.querySelector('.electrician-count');
+			if (topCounter) {
+    			const match = topCounter.textContent.match(/Join (\d+) electrician/);
+    			if (match) {
+        			const currentCount = parseInt(match[1]);
+        			const newCount = currentCount + 1;
+        			const plural = newCount === 1 ? 'electrician' : 'electricians';
+        			topCounter.textContent = `Join ${newCount} ${plural} already on the waitlist`;
+    			}
+			}
             
             // Re-enable button
             submitButton.disabled = false;
