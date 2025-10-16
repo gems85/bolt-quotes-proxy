@@ -31,11 +31,38 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Project ID is required' });
         }
 
-        console.log('Fetching photos for project:', projectId);
+        console.log('Fetching project to get Project ID number:', projectId);
 
-        // Use SEARCH to find photos where the Project field contains this project ID
-        const filterFormula = `SEARCH("${projectId}", ARRAYJOIN({Project}))`;
+        // First, get the project to extract its numeric Project ID
+        const projectUrl = `https://api.airtable.com/v0/${BASE_ID}/Projects/${projectId}`;
+        
+        const projectResponse = await fetch(projectUrl, {
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!projectResponse.ok) {
+            console.error('Error fetching project:', projectResponse.status);
+            throw new Error(`Failed to fetch project: ${projectResponse.status}`);
+        }
+
+        const projectData = await projectResponse.json();
+        const projectIdWithPrefix = projectData.fields['Project ID'];
+        
+        console.log('Project ID with prefix:', projectIdWithPrefix);
+
+        if (!projectIdWithPrefix) {
+            console.log('No Project ID found, returning empty results');
+            return res.status(200).json({ records: [] });
+        }
+
+        // Now filter photos by the Project ID with prefix (e.g., "PRJ-8")
+        const filterFormula = `{Project ID} = "${projectIdWithPrefix}"`;
         const photosUrl = `https://api.airtable.com/v0/${BASE_ID}/${PHOTOS_TABLE}?filterByFormula=${encodeURIComponent(filterFormula)}`;
+
+        console.log('Fetching photos with filter:', filterFormula);
 
         const response = await fetch(photosUrl, {
             headers: {
