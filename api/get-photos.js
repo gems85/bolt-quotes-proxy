@@ -1,89 +1,64 @@
+// api/get-photos.js
+// Fetches photos for a specific project
+
+const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
+const BASE_ID = 'applWK4PXoo86ajvD';
+const PHOTOS_TABLE = 'Photos';
+
 export default async function handler(req, res) {
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    
+
     if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
+        return res.status(200).end();
     }
-    
+
     if (req.method !== 'GET') {
-        res.status(405).json({ error: 'Method not allowed' });
-        return;
+        return res.status(405).json({ error: 'Method not allowed' });
     }
-    
-    var projectRecordId = req.query.projectId;
-    
-    if (!projectRecordId) {
-        res.status(400).json({ error: 'projectId required' });
-        return;
-    }
-    
-    var AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-    var BASE_ID = 'applWK4PXoo86ajvD';
-    
+
     if (!AIRTABLE_TOKEN) {
-        res.status(500).json({ error: 'Token not configured' });
-        return;
+        console.error('AIRTABLE_PAT not configured');
+        return res.status(500).json({ error: 'Server configuration error' });
     }
-    
+
     try {
-        console.log('Fetching project:', projectRecordId);
-        
-        var projectUrl = 'https://api.airtable.com/v0/' + BASE_ID + '/Projects/' + projectRecordId;
-        
-        var projectResponse = await fetch(projectUrl, {
-            method: 'GET',
+        const { projectId } = req.query;
+
+        if (!projectId) {
+            return res.status(400).json({ error: 'Project ID is required' });
+        }
+
+        console.log('Fetching photos for project:', projectId);
+
+        // Use SEARCH to find photos where the Project field contains this project ID
+        const filterFormula = `SEARCH("${projectId}", ARRAYJOIN({Project}))`;
+        const photosUrl = `https://api.airtable.com/v0/${BASE_ID}/${PHOTOS_TABLE}?filterByFormula=${encodeURIComponent(filterFormula)}`;
+
+        const response = await fetch(photosUrl, {
             headers: {
-                'Authorization': 'Bearer ' + AIRTABLE_TOKEN,
+                'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
                 'Content-Type': 'application/json'
             }
         });
-        
-        if (!projectResponse.ok) {
-            throw new Error('Failed to fetch project');
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Error fetching photos from Airtable:', errorData);
+            throw new Error(`Airtable API error: ${response.status}`);
         }
-        
-        var projectData = await projectResponse.json();
-        var projectIdNumber = projectData.fields['Project ID'];
-        
-        console.log('Project ID number:', projectIdNumber);
-        
-        if (!projectIdNumber && projectIdNumber !== 0) {
-            res.status(200).json({ records: [] });
-            return;
-        }
-        
-        var filterFormula = '{Project ID} = ' + projectIdNumber;
-        var encodedFormula = encodeURIComponent(filterFormula);
-        var photosUrl = 'https://api.airtable.com/v0/' + BASE_ID + '/Photos?filterByFormula=' + encodedFormula;
-        
-        console.log('Querying photos');
-        
-        var photosResponse = await fetch(photosUrl, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + AIRTABLE_TOKEN,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!photosResponse.ok) {
-            throw new Error('Failed to fetch photos');
-        }
-        
-        var photosData = await photosResponse.json();
-        
-        console.log('Photos found:', photosData.records.length);
-        
-        res.status(200).json(photosData);
-        
+
+        const data = await response.json();
+        console.log(`Found ${data.records ? data.records.length : 0} photos`);
+
+        return res.status(200).json(data);
+
     } catch (error) {
-        console.error('Error:', error.message);
-        res.status(500).json({ 
-            error: 'Failed to load photos',
+        console.error('Error in get-photos:', error);
+        return res.status(500).json({ 
+            error: 'Failed to fetch photos',
             message: error.message 
         });
     }
