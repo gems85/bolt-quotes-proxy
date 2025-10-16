@@ -332,6 +332,10 @@
                             </select>
                         </span>
                     </div>
+                    <div class="info-row">
+                        <span class="info-label">Quote ID:</span>
+                        <span class="info-value" id="quoteId" style="color: #667eea; font-weight: 700;">-</span>
+                    </div>
                 </div>
 
                 <!-- Uploaded Photos -->
@@ -473,6 +477,7 @@
 
     <script>
         let currentProject = null;
+        let currentQuote = null;
         
         // Load projects on page load
         window.addEventListener('DOMContentLoaded', () => {
@@ -526,16 +531,52 @@
                 }
                 
                 currentProject = await response.json();
-                console.log('Current project:', currentProject); //Debug log
+                console.log('Current project:', currentProject);
                 
                 displayProjectInfo();
-                await loadPhotos(); //Ensure this is awaited
+                await loadPhotos();
+                await getOrCreateQuote(projectId);
                 
                 document.getElementById('mainContent').style.display = 'grid';
                 
             } catch (error) {
                 console.error('Error loading project:', error);
                 alert('Failed to load project details');
+            }
+        }
+        
+        // Get or create quote for this project
+        async function getOrCreateQuote(projectId) {
+            try {
+                console.log('Getting or creating quote for project:', projectId);
+                
+                const response = await fetch('/api/get-or-create-quote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ projectId })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to get or create quote');
+                }
+                
+                const data = await response.json();
+                currentQuote = data.quote;
+                
+                if (data.created) {
+                    console.log('✅ Created new quote:', currentQuote.fields['Quote ID']);
+                } else {
+                    console.log('📋 Found existing quote:', currentQuote.fields['Quote ID']);
+                }
+                
+                // Display Quote ID
+                document.getElementById('quoteId').textContent = currentQuote.fields['Quote ID'] || 'Generating...';
+                
+            } catch (error) {
+                console.error('Error getting/creating quote:', error);
+                document.getElementById('quoteId').textContent = 'Error';
             }
         }
         
@@ -565,6 +606,7 @@
                 if (mapped) document.getElementById('propertyType').value = mapped;
             }
             
+            // Set Installation Location from project data
             if (fields['Install Location']) {
                 const locMap = {
                     'garage': 'garage-attached',
@@ -585,85 +627,75 @@
             }
         }
         
-            // Load photos
-            async function loadPhotos() {
-                const photosGrid = document.getElementById('photosGrid');
-                photosGrid.innerHTML = '<div class="loading">Loading photos...</div>';
+        // Load photos - FIXED VERSION
+        async function loadPhotos() {
+            const photosGrid = document.getElementById('photosGrid');
+            photosGrid.innerHTML = '<div class="loading">Loading photos...</div>';
+
+            try {
+                console.log('Loading photos for project:', currentProject.id);
+                
+                const response = await fetch(`/api/get-photos?projectId=${currentProject.id}`);
     
-                try {
-                    const response = await fetch(`/api/get-photos?projectId=${currentProject.id}`);
-        
-                    if (!response.ok) {
-                        throw new Error(`Failed to load photos: ${response.status}`);
-                    }
-        
-                    const data = await response.json();
-                    console.log('Photos API response:', data); // Debug log
-        
-                    // Check if we have records and they contain photos
-                    if (!data.records || data.records.length === 0) {
+                if (!response.ok) {
+                    throw new Error(`Failed to load photos: ${response.status}`);
+                }
+    
+                const data = await response.json();
+                console.log('Photos API response:', data);
+    
+                // Check if we have records
+                if (!data.records || data.records.length === 0) {
                     photosGrid.innerHTML = '<div class="loading">No photos available for this project</div>';
                     return;
-                    }
-        
-                    let hasPhotos = false;
-                    photosGrid.innerHTML = '';
-        
-                    data.records.forEach(photo => {
-                        const fields = photo.fields;
-                        console.log('Photo fields:', fields); // Debug log
-            
-                        // Check for various possible file field names
-                        const fileField = fields.File || fields.Files || fields.Photo || fields.Photos || fields.Attachment || fields.Attachments;
-            
-                        if (fileField && fileField.length > 0) {
-                            hasPhotos = true;
-                            const file = fileField[0];
-                            const photoUrl = file.url || file.thumbnails?.large?.url || file.thumbnails?.small?.url;
-                            const photoType = fields['Photo Type'] || fields.Type || fields.Description || 'Project Photo';
-                
-                            if (photoUrl) {
-                                const photoCard = document.createElement('div');
-                                photoCard.className = 'photo-card';
-                                photoCard.innerHTML = `
-                                    <img src="${photoUrl}" alt="${photoType}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'padding:20px; text-align:center;\\'>Failed to load image</div>';">
-                                    <div class="photo-label">${photoType}</div>
-                    `;
-                                photosGrid.appendChild(photoCard);
-                            }
-                        }
-                    });
-        
-                    if (!hasPhotos) {
-                        photosGrid.innerHTML = '<div class="loading">No photos found in project records</div>';
-                    }
-        
-                } catch (error) {
-                    console.error('Error loading photos:', error);
-                    photosGrid.innerHTML = `<div class="loading">Error loading photos: ${error.message}</div>`;
                 }
-            }
-
-            // Debug function to check API response
-            async function debugPhotos() {
-                if (!currentProject) return;
     
-                try {
-                    const response = await fetch(`/api/get-photos?projectId=${currentProject.id}`);
-                    const data = await response.json();
-                    console.log('DEBUG - Full photos response:', data);
+                let hasPhotos = false;
+                photosGrid.innerHTML = '';
+    
+                data.records.forEach((photo, index) => {
+                    const fields = photo.fields;
+                    console.log(`Photo ${index} fields:`, fields);
         
-                    if (data.records && data.records.length > 0) {
-                        data.records.forEach((record, index) => {
-                            console.log(`DEBUG - Record ${index}:`, record);
-                            console.log(`DEBUG - Record ${index} fields:`, record.fields);
-                        });
+                    // Check for various possible attachment field names
+                    const attachmentField = fields.File || fields.Files || fields.Photo || fields.Photos || 
+                                          fields.Attachment || fields.Attachments || fields.Image || fields.Images;
+        
+                    if (attachmentField && attachmentField.length > 0) {
+                        hasPhotos = true;
+                        const file = attachmentField[0];
+                        
+                        // Get the best available URL
+                        const photoUrl = file.url || 
+                                       (file.thumbnails && file.thumbnails.large && file.thumbnails.large.url) || 
+                                       (file.thumbnails && file.thumbnails.small && file.thumbnails.small.url);
+                        
+                        const photoType = fields['Photo Type'] || fields.Type || fields.Description || 
+                                        fields.Label || fields.Name || 'Project Photo';
+            
+                        if (photoUrl) {
+                            const photoCard = document.createElement('div');
+                            photoCard.className = 'photo-card';
+                            photoCard.innerHTML = `
+                                <img src="${photoUrl}" 
+                                     alt="${photoType}" 
+                                     onerror="this.parentElement.innerHTML='<div style=\\'padding:20px; text-align:center; color:#999;\\'>Image failed to load</div>';">
+                                <div class="photo-label">${photoType}</div>
+                            `;
+                            photosGrid.appendChild(photoCard);
+                        }
+                    }
+                });
+    
+                if (!hasPhotos) {
+                    photosGrid.innerHTML = '<div class="loading">No photos found in project records</div>';
                 }
-                } catch (error) {
-                    console.error('DEBUG - Error:', error);
-                }
+    
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                photosGrid.innerHTML = `<div class="loading">Error loading photos: ${error.message}</div>`;
             }
-        
+        }
         
         // Update project status
         async function updateProjectStatus() {
