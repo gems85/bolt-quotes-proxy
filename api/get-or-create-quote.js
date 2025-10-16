@@ -34,7 +34,9 @@ export default async function handler(req, res) {
         console.log('Getting or creating quote for project:', projectId);
 
         // First, check if a quote already exists for this project
-        const searchUrl = `https://api.airtable.com/v0/${BASE_ID}/${QUOTES_TABLE}?filterByFormula={Project}="${projectId}"`;
+        // Use SEARCH function to look for the project ID in the linked record field
+        const filterFormula = `SEARCH("${projectId}", ARRAYJOIN({Project}))`;
+        const searchUrl = `https://api.airtable.com/v0/${BASE_ID}/${QUOTES_TABLE}?filterByFormula=${encodeURIComponent(filterFormula)}`;
         
         const searchResponse = await fetch(searchUrl, {
             headers: {
@@ -65,25 +67,25 @@ export default async function handler(req, res) {
 
         // If no quote exists, create one
         console.log('No existing quote found. Creating new quote...');
-        
-        const createData = {
-            fields: {
-                'Project': [projectId], // Link to Projects table
-                'Created At': new Date().toISOString()
-            }
-        };
 
-        const createResponse = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/${QUOTES_TABLE}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(createData)
-            }
-        );
+        const createUrl = `https://api.airtable.com/v0/${BASE_ID}/${QUOTES_TABLE}`;
+        
+        const createResponse = await fetch(createUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                records: [
+                    {
+                        fields: {
+                            'Project': [projectId]
+                        }
+                    }
+                ]
+            })
+        });
 
         if (!createResponse.ok) {
             const errorData = await createResponse.json();
@@ -91,7 +93,9 @@ export default async function handler(req, res) {
             throw new Error('Failed to create quote record');
         }
 
-        const newQuote = await createResponse.json();
+        const createData = await createResponse.json();
+        const newQuote = createData.records[0];
+        
         console.log('✅ Created new quote:', newQuote.fields['Quote ID']);
 
         return res.status(200).json({
@@ -102,9 +106,9 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('Error in get-or-create-quote:', error);
-        return res.status(500).json({
+        return res.status(500).json({ 
             error: 'Failed to get or create quote',
-            message: error.message
+            message: error.message 
         });
     }
 }
