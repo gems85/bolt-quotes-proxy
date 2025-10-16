@@ -589,12 +589,7 @@
                     <p>Your professional quote will appear here shortly</p>
                 </div>
                 <div class="quote-result" id="quoteResult">
-                    <div class="quote-header">
-                        <h2>Professional Quote</h2>
-                    </div>
-                    <div class="quote-breakdown" id="quoteBreakdown">
-                        <!-- Quote details will be inserted here -->
-                    </div>
+                    <!-- Quote will be inserted here by JavaScript -->
                 </div>
             </div>
         </div>
@@ -770,7 +765,7 @@
             }
         }
         
-        // Load photos - FIXED VERSION
+        // Load photos
         async function loadPhotos() {
             const photosGrid = document.getElementById('photosGrid');
             photosGrid.innerHTML = '<div class="loading">Loading photos...</div>';
@@ -787,7 +782,6 @@
                 const data = await response.json();
                 console.log('Photos API response:', data);
     
-                // Check if we have records
                 if (!data.records || data.records.length === 0) {
                     photosGrid.innerHTML = '<div class="loading">No photos available for this project</div>';
                     return;
@@ -800,7 +794,6 @@
                     const fields = photo.fields;
                     console.log(`Photo ${index} fields:`, fields);
         
-                    // Check for various possible attachment field names
                     const attachmentField = fields.File || fields.Files || fields.Photo || fields.Photos || 
                                           fields.Attachment || fields.Attachments || fields.Image || fields.Images;
         
@@ -808,7 +801,6 @@
                         hasPhotos = true;
                         const file = attachmentField[0];
                         
-                        // Get the best available URL
                         const photoUrl = file.url || 
                                        (file.thumbnails && file.thumbnails.large && file.thumbnails.large.url) || 
                                        (file.thumbnails && file.thumbnails.small && file.thumbnails.small.url);
@@ -877,6 +869,8 @@
         
         // Generate quote
         function generateQuote() {
+            console.log('🎯 Generating quote...');
+            
             // Get all form values
             const propertyType = document.getElementById('propertyType').value;
             const state = document.getElementById('state').value;
@@ -888,6 +882,8 @@
             const conduitType = document.getElementById('conduitType').value;
             const chargerType = document.getElementById('chargerType').value;
             const markup = parseInt(document.getElementById('markup').value);
+            
+            console.log('Distance:', distance, 'Conduit Type:', conduitType);
             
             // Base labor cost
             let laborCost = 800;
@@ -913,20 +909,31 @@
             };
             laborCost *= stateMultipliers[state] || 1.0;
             
-            // Distance cost (conduit + wiring)
-            let distanceCost = 0;
+            // FIXED: Conduit & Wiring cost calculation
+            let conduitBaseCost = 150;
+            let wiringBaseCost = 100;
+            
+            // Additional cost per foot over 20 feet
+            let additionalDistanceCost = 0;
             if (distance > 20) {
                 const extraFeet = distance - 20;
-                distanceCost = extraFeet * 12; // $12 per foot
+                additionalDistanceCost = extraFeet * 12;
             }
             
-            // Conduit type adjustment
+            // Conduit type multiplier
             const conduitMultipliers = {
                 'surface': 1.0,
                 'concealed': 1.3,
                 'underground': 1.5
             };
-            distanceCost *= conduitMultipliers[conduitType] || 1.0;
+            const conduitMultiplier = conduitMultipliers[conduitType] || 1.0;
+            
+            const distanceCost = (conduitBaseCost + wiringBaseCost + additionalDistanceCost) * conduitMultiplier;
+            
+            console.log('Base costs:', conduitBaseCost, wiringBaseCost);
+            console.log('Additional distance cost:', additionalDistanceCost);
+            console.log('Conduit multiplier:', conduitMultiplier);
+            console.log('FINAL Distance Cost:', distanceCost);
             
             // Materials cost
             let materialsCost = 350;
@@ -965,38 +972,147 @@
             // Calculate total
             const total = subtotal + markupAmount + permitCost;
             
+            // Get customer info
+            const customerName = document.getElementById('customerName').textContent;
+            const customerAddress = document.getElementById('customerAddress').textContent;
+            const quoteId = document.getElementById('quoteId').textContent;
+            
+            // Format labels for display
+            const propertyTypeLabels = {
+                'single-family': 'Single-family home',
+                'townhouse': 'Townhouse',
+                'condo': 'Condo/Apartment',
+                'multi-family': 'Multi-family',
+                'commercial': 'Commercial'
+            };
+            
+            const conduitTypeLabels = {
+                'surface': 'Surface mount',
+                'concealed': 'Concealed/in-wall',
+                'underground': 'Underground'
+            };
+            
+            const chargerTypeLabels = {
+                'standard': 'Standard hardwired',
+                'nema': 'NEMA outlet',
+                'smart': 'Smart/WiFi enabled'
+            };
+            
+            const installLocationLabels = {
+                'garage-attached': 'Attached Garage',
+                'garage-detached': 'Detached Garage',
+                'driveway': 'Driveway',
+                'carport': 'Carport',
+                'exterior-wall': 'Exterior Wall'
+            };
+            
             // Display quote
             document.getElementById('placeholderText').style.display = 'none';
-            document.getElementById('quoteResult').classList.add('show');
+            const quoteResult = document.getElementById('quoteResult');
+            quoteResult.classList.add('show');
             
-            const breakdownDiv = document.getElementById('quoteBreakdown');
-            breakdownDiv.innerHTML = `
-                <div class="quote-item">
-                    <span>Labor (${propertyType}, ${state}):</span>
-                    <span>$${laborCost.toFixed(2)}</span>
+            quoteResult.innerHTML = `
+                <div class="quote-header">
+                    <h2>⚡ EV Charger Installation Quote</h2>
+                    <p>Quote ID: ${quoteId} | Generated: ${new Date().toLocaleDateString()}</p>
                 </div>
-                <div class="quote-item">
-                    <span>Materials & Equipment:</span>
-                    <span>$${materialsCost.toFixed(2)}</span>
+                
+                <div class="customer-details">
+                    <h3>Customer Information</h3>
+                    <p><strong>${customerName}</strong></p>
+                    <p>${customerAddress}</p>
                 </div>
-                <div class="quote-item">
-                    <span>Conduit & Wiring (${distance}ft, ${conduitType}):</span>
-                    <span>$${distanceCost.toFixed(2)}</span>
+                
+                <div class="installation-overview">
+                    <h3>Installation Overview</h3>
+                    <div class="overview-grid">
+                        <div class="overview-item">
+                            <span class="overview-label">Property Type:</span>
+                            <span class="overview-value">${propertyTypeLabels[propertyType]}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-label">State:</span>
+                            <span class="overview-value">${state}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-label">Installation Location:</span>
+                            <span class="overview-value">${installLocationLabels[installLocation]}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-label">Distance to Panel:</span>
+                            <span class="overview-value">${distance} feet</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-label">Charger Type:</span>
+                            <span class="overview-value">${chargerTypeLabels[chargerType]}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-label">Conduit Type:</span>
+                            <span class="overview-value">${conduitTypeLabels[conduitType]}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-label">Panel Capacity:</span>
+                            <span class="overview-value">${panelCapacity}A</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="overview-label">Panel Upgrade:</span>
+                            <span class="overview-value">${panelUpgradeCost > 0 ? 'Required' : 'Not required'}</span>
+                        </div>
+                    </div>
                 </div>
-                ${panelUpgradeCost > 0 ? `<div class="quote-item"><span>Panel Upgrade Required:</span><span>$${panelUpgradeCost.toFixed(2)}</span></div>` : ''}
-                <div class="quote-item">
-                    <span>Business Markup (${markup}%):</span>
-                    <span>$${markupAmount.toFixed(2)}</span>
+                
+                <div class="quote-breakdown">
+                    <div class="breakdown-header">
+                        <h3>Cost Breakdown</h3>
+                    </div>
+                    <div class="quote-item">
+                        <span class="quote-item-label">Professional Labor & Installation</span>
+                        <span class="quote-item-value">$${laborCost.toFixed(2)}</span>
+                    </div>
+                    <div class="quote-item">
+                        <span class="quote-item-label">Materials & Equipment</span>
+                        <span class="quote-item-value">$${materialsCost.toFixed(2)}</span>
+                    </div>
+                    <div class="quote-item">
+                        <span class="quote-item-label">Conduit & Wiring (${distance}ft, ${conduitTypeLabels[conduitType]})</span>
+                        <span class="quote-item-value">$${distanceCost.toFixed(2)}</span>
+                    </div>
+                    ${panelUpgradeCost > 0 ? `<div class="quote-item"><span class="quote-item-label">Electrical Panel Upgrade</span><span class="quote-item-value">$${panelUpgradeCost.toFixed(2)}</span></div>` : ''}
+                    <div class="quote-subtotal">
+                        <span>Subtotal</span>
+                        <span>$${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="quote-item">
+                        <span class="quote-item-label">Professional Services & Warranty (${markup}%)</span>
+                        <span class="quote-item-value">$${markupAmount.toFixed(2)}</span>
+                    </div>
+                    <div class="quote-item">
+                        <span class="quote-item-label">Permit & Inspection Fees</span>
+                        <span class="quote-item-value">$${permitCost.toFixed(2)}</span>
+                    </div>
+                    <div class="quote-total">
+                        <span>Total Investment</span>
+                        <span>$${total.toFixed(2)}</span>
+                    </div>
                 </div>
-                <div class="quote-item">
-                    <span>Permit & Inspection (${state}):</span>
-                    <span>$${permitCost.toFixed(2)}</span>
-                </div>
-                <div class="quote-item quote-total">
-                    <span>Total Quote:</span>
-                    <span>$${total.toFixed(2)}</span>
+                
+                <div class="whats-included">
+                    <h3>✓ What's Included</h3>
+                    <ul>
+                        <li>Professional site assessment and installation planning</li>
+                        <li>All necessary electrical wiring and conduit</li>
+                        <li>Level 2 EV charging station installation</li>
+                        <li>Connection to your electrical panel</li>
+                        <li>Full permitting and inspection coordination</li>
+                        <li>Code-compliant installation per NEC standards</li>
+                        <li>System testing and demonstration</li>
+                        <li>1-year workmanship warranty</li>
+                        <li>Ongoing technical support</li>
+                    </ul>
                 </div>
             `;
+            
+            console.log('✅ Quote generated successfully!');
         }
     </script>
 </body>
