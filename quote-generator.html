@@ -447,13 +447,17 @@
                     <div class="info-row">
                         <span class="info-label">Status:</span>
                         <span class="info-value">
-                            <select id="statusSelect" class="status-select" onchange="updateProjectStatus()">
-                                <option value="Pending Photos">Pending</option>
+                            <select id="project-status" onchange="updateProjectStatus()">
+                                <option value="Pending Photos">Pending Photos</option>
                                 <option value="Photos Uploaded">Photos Uploaded</option>
-                                <option value="Quote Ready">Quote Ready</option>
-                                <option value="Quoted">Quoted</option>
+                                <option value="Quote Draft">Quote Draft</option>
+                                <option value="Quote Sent">Quote Sent</option>
+                                <option value="Quote Viewed">Quote Viewed</option>
                                 <option value="Accepted">Accepted</option>
+                                <option value="Scheduled">Scheduled</option>
                                 <option value="Completed">Completed</option>
+                                <option value="Rejected">Rejected</option>
+                                <option value="Canceled">Canceled</option>
                             </select>
                         </span>
                     </div>
