@@ -203,14 +203,12 @@
             padding: 30px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .placeholder-text {
             text-align: center;
             color: #7f8c8d;
+            padding: 60px 20px;
         }
         
         .placeholder-text .icon {
@@ -226,6 +224,7 @@
         
         .quote-result {
             display: none;
+            width: 100%;
         }
         
         .quote-result.show {
@@ -234,39 +233,165 @@
         
         .quote-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #27ae60;
         }
         
         .quote-header h2 {
             color: #27ae60;
-            font-size: 1.8rem;
+            font-size: 2rem;
             margin-bottom: 10px;
         }
         
-        .quote-breakdown {
+        .quote-header p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+        
+        .customer-details {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .customer-details h3 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .customer-details p {
+            margin: 5px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .installation-overview {
+            margin-bottom: 25px;
+        }
+        
+        .installation-overview h3 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .overview-item {
+            display: flex;
+            padding: 8px 0;
+        }
+        
+        .overview-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 140px;
+        }
+        
+        .overview-value {
+            color: #333;
+        }
+        
+        .quote-breakdown {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+        
+        .breakdown-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .breakdown-header h3 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin: 0;
         }
         
         .quote-item {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e9ecef;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f0f0f0;
         }
         
         .quote-item:last-child {
             border-bottom: none;
         }
         
+        .quote-item-label {
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .quote-item-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .quote-subtotal {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid #e9ecef;
+            font-weight: 600;
+        }
+        
         .quote-total {
-            font-size: 1.4rem;
+            background: #27ae60;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.3rem;
             font-weight: bold;
+        }
+        
+        .whats-included {
+            background: #e8f5e8;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .whats-included h3 {
+            font-size: 1.1rem;
             color: #27ae60;
-            border-top: 3px solid #27ae60;
-            padding-top: 15px;
-            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .whats-included ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .whats-included li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .whats-included li:before {
+            content: "✓ ";
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 8px;
         }
         
         .loading {
