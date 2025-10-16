@@ -334,7 +334,7 @@
                     </div>
                     <div class="info-row">
                         <span class="info-label">Quote ID:</span>
-                        <span class="info-value" id="quoteId" style="color: #667eea; font-weight: 700;">-</span>
+                        <span class="info-value" id="quoteId" style="color: #667eea; font-weight: 700; font-size: 1.1em;">-</span>
                     </div>
                 </div>
 
@@ -553,7 +553,7 @@
         // Get or create quote for this project
         async function getOrCreateQuote(projectId) {
             try {
-                console.log('Getting or creating quote for project:', projectId);
+                console.log('🔍 Getting or creating quote for project:', projectId);
                 
                 const response = await fetch('/api/get-or-create-quote', {
                     method: 'POST',
@@ -565,7 +565,7 @@
                 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('Quote API error:', response.status, errorText);
+                    console.error('❌ Quote API error:', response.status, errorText);
                     throw new Error(`Failed to get or create quote: ${response.status}`);
                 }
                 
@@ -574,17 +574,27 @@
                 
                 if (data.created) {
                     console.log('✅ Created new quote:', currentQuote.fields['Quote ID']);
+                    console.log('🎉 Airtable auto-generated the Quote ID');
                 } else {
                     console.log('📋 Found existing quote:', currentQuote.fields['Quote ID']);
+                    console.log('♻️ Loaded existing quote - no duplicate created');
                 }
                 
-                // Display Quote ID
-                document.getElementById('quoteId').textContent = currentQuote.fields['Quote ID'] || 'Generating...';
+                console.log('💾 Quote record ID:', currentQuote.id);
+                
+                // Display Quote ID in the UI (styled in purple/blue, read-only)
+                const quoteIdElement = document.getElementById('quoteId');
+                quoteIdElement.textContent = currentQuote.fields['Quote ID'] || 'Generating...';
+                quoteIdElement.style.color = '#667eea';
+                quoteIdElement.style.fontWeight = '700';
+                
+                console.log('✅ Quote ID displayed in Customer Information section');
                 
             } catch (error) {
-                console.error('Error getting/creating quote:', error);
+                console.error('❌ Error getting/creating quote:', error);
                 document.getElementById('quoteId').textContent = 'Error - See console';
-                throw error; // Re-throw so the catch in loadProjectDetails can handle it
+                document.getElementById('quoteId').style.color = '#e74c3c';
+                throw error;
             }
         }
         
