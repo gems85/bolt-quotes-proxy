@@ -22,7 +22,7 @@ export default async function handler(req, res) {
 
     const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const BASE_ID = process.env.BASE_ID;
-    const QUOTES_TABLE = 'tbl7stAGnVLMkAHNy';
+    const QUOTES_TABLE = process.env.QUOTES_TABLE;
 
     try {
         // Check if a quote already exists for this project
