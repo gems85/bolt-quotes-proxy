@@ -929,10 +929,10 @@
             "VA": 5.3, "WA": 6.5, "WV": 6.0, "WI": 5.0, "WY": 4.0
         };
 
-        const AIRTABLE_TOKEN = 'AIRTABLE_PAT';
-        const BASE_ID = 'applWK4PXoo86ajvD';
-        const PROJECTS_TABLE = 'tblhfewGPP306LVNX';
-        const PHOTOS_TABLE = 'Photos';
+        const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
+        const BASE_ID = process.env.BASE_ID;
+        const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
+        const PHOTOS_TABLE = process.env.PHOTOS_TABLE;
         
         let currentProject = null;
         let selectedAddons = [];
