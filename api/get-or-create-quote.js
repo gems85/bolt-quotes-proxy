@@ -20,8 +20,8 @@ export default async function handler(req, res) {
         });
     }
 
-    const AIRTABLE_TOKEN = 'AIRTABLE_PAT';
-    const BASE_ID = 'applWK4PXoo86ajvD';
+    const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
+    const BASE_ID = process.env.BASE_ID;
     const QUOTES_TABLE = 'tbl7stAGnVLMkAHNy';
 
     try {
