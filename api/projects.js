@@ -9,8 +9,8 @@ export default async function handler(req, res) {
 
     const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const BASE_ID = process.env.BASE_ID;
-    const PROJECTS_TABLE = 'tblhfewGPP306LVNX';
-    const PHOTOS_TABLE = 'Photos';
+    const PROJECTS_TABLE = process.env.PROJECTS_TABLE;
+    const PHOTOS_TABLE = process.env.PHOTOS_TABLE;
 
     if (!AIRTABLE_TOKEN) {
         return res.status(500).json({ error: 'Airtable API token not configured' });
