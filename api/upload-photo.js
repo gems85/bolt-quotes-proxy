@@ -12,7 +12,7 @@ export const config = {
 const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
 const BASE_ID = 'applWK4PXoo86ajvD';
-const PHOTOS_TABLE = 'Photos';
+const PHOTOS_TABLE = 'process.env.PHOTOS_TABLE';
 
 // Helper to read request body
 async function readBody(req) {
