@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     
     try {
         const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-        const BASE_ID = 'applWK4PXoo86ajvD';
+        const BASE_ID = process.env.BASE_ID;
         
         const response = await fetch(
             `https://api.airtable.com/v0/${BASE_ID}/Projects?sort%5B0%5D%5Bfield%5D=Created%20At&sort%5B0%5D%5Bdirection%5D=desc`,
