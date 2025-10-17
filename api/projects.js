@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
     const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
     const BASE_ID = 'applWK4PXoo86ajvD';
-    const PROJECTS_TABLE = 'Projects';
+    const PROJECTS_TABLE = 'tblhfewGPP306LVNX';
     const PHOTOS_TABLE = 'Photos';
 
     if (!AIRTABLE_TOKEN) {
