@@ -11,7 +11,7 @@ export const config = {
 // Get environment variables at module level
 const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
-const BASE_ID = 'applWK4PXoo86ajvD';
+const BASE_ID = process.env.BASE_ID;
 const PHOTOS_TABLE = 'process.env.PHOTOS_TABLE';
 
 // Helper to read request body
