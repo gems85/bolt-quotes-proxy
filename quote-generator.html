@@ -114,7 +114,8 @@
         }
         
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -122,10 +123,40 @@
             font-size: 0.95rem;
         }
         
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #3498db;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .checkbox-group label {
+            margin: 0;
+            flex: 1;
+        }
+        
+        .checkbox-price {
+            font-weight: 600;
+            color: #27ae60;
         }
         
         .generate-btn {
@@ -184,11 +215,6 @@
             border-radius: 12px;
             font-size: 0.85rem;
             font-weight: 600;
-        }
-        
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
         }
         
         .status-pending-photos {
@@ -284,9 +310,16 @@
             border-bottom: 3px solid #3498db;
         }
         
-        .quote-header h2 {
+        .quote-header .company-name {
+            font-size: 2rem;
             color: #2c3e50;
-            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .quote-header h2 {
+            color: #3498db;
+            font-size: 1.5rem;
             margin-bottom: 10px;
         }
         
@@ -296,6 +329,16 @@
             margin-top: 15px;
             font-size: 0.9rem;
             color: #7f8c8d;
+        }
+        
+        .validity-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #856404;
         }
         
         .customer-section {
@@ -407,6 +450,14 @@
             font-weight: 600;
         }
         
+        .quote-section-header {
+            background: #ecf0f1;
+            padding: 12px 20px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 10px;
+        }
+        
         .quote-subtotal {
             display: flex;
             justify-content: space-between;
@@ -429,6 +480,95 @@
             margin-top: 10px;
         }
         
+        .rebates-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            border-radius: 8px;
+        }
+        
+        .rebates-section h3 {
+            color: #155724;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .rebate-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #c3e6cb;
+        }
+        
+        .rebate-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+        
+        .rebate-name {
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 5px;
+        }
+        
+        .rebate-amount {
+            color: #28a745;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .rebate-description {
+            font-size: 0.9rem;
+            color: #155724;
+        }
+        
+        .financing-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            border-radius: 8px;
+        }
+        
+        .financing-section h3 {
+            color: #004085;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .financing-plans {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .financing-plan {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #b8daff;
+        }
+        
+        .plan-term {
+            font-weight: 600;
+            color: #004085;
+            margin-bottom: 5px;
+        }
+        
+        .plan-payment {
+            font-size: 1.2rem;
+            color: #007bff;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .plan-apr {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
         .whats-included {
             margin-top: 30px;
             padding: 20px;
@@ -437,7 +577,7 @@
         }
         
         .whats-included h3 {
-            color: #27ae60;
+            color: #2c3e50;
             margin-bottom: 15px;
             font-size: 1.2rem;
         }
@@ -449,9 +589,10 @@
         
         .whats-included li {
             padding: 8px 0;
-            padding-left: 25px;
+            padding-left: 30px;
             position: relative;
             color: #2c3e50;
+            line-height: 1.5;
         }
         
         .whats-included li:before {
@@ -461,6 +602,17 @@
             color: #27ae60;
             font-weight: bold;
             font-size: 1.2rem;
+        }
+        
+        .whats-included ul ul {
+            margin-top: 5px;
+            margin-left: 20px;
+        }
+        
+        .whats-included ul ul li:before {
+            content: "•";
+            color: #7f8c8d;
+            font-size: 1rem;
         }
         
         @media print {
@@ -526,12 +678,56 @@
                         <div class="form-group">
                             <label>State:</label>
                             <select id="state">
-                                <option value="GA">Georgia</option>
-                                <option value="FL">Florida</option>
                                 <option value="AL">Alabama</option>
-                                <option value="SC">South Carolina</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA" selected>Georgia</option>
+                                <option value="HI">Hawaii</option>
+                                <option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option>
+                                <option value="IN">Indiana</option>
+                                <option value="IA">Iowa</option>
+                                <option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option>
+                                <option value="LA">Louisiana</option>
+                                <option value="ME">Maine</option>
+                                <option value="MD">Maryland</option>
+                                <option value="MA">Massachusetts</option>
+                                <option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option>
+                                <option value="MS">Mississippi</option>
+                                <option value="MO">Missouri</option>
+                                <option value="MT">Montana</option>
+                                <option value="NE">Nebraska</option>
+                                <option value="NV">Nevada</option>
+                                <option value="NH">New Hampshire</option>
+                                <option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option>
+                                <option value="NY">New York</option>
                                 <option value="NC">North Carolina</option>
+                                <option value="ND">North Dakota</option>
+                                <option value="OH">Ohio</option>
+                                <option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option>
+                                <option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option>
                                 <option value="TN">Tennessee</option>
+                                <option value="TX">Texas</option>
+                                <option value="UT">Utah</option>
+                                <option value="VT">Vermont</option>
+                                <option value="VA">Virginia</option>
+                                <option value="WA">Washington</option>
+                                <option value="WV">West Virginia</option>
+                                <option value="WI">Wisconsin</option>
+                                <option value="WY">Wyoming</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -553,6 +749,15 @@
                     <!-- Electrical Panel Assessment -->
                     <div class="section">
                         <div class="section-title">Electrical Panel Assessment</div>
+                        <div class="form-group">
+                            <label>Panel Type:</label>
+                            <select id="panelType">
+                                <option value="standard">Standard Circuit Breaker</option>
+                                <option value="fuse">Fuse Box</option>
+                                <option value="subpanel">Subpanel</option>
+                                <option value="main">Main Service Panel</option>
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label>Panel Age:</label>
                             <select id="panelAge">
@@ -594,13 +799,19 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Ground Charger Type:</label>
+                            <label>Charger Type:</label>
                             <select id="chargerType">
                                 <option value="standard">Standard hardwired</option>
                                 <option value="nema">NEMA outlet</option>
                                 <option value="smart">Smart/WiFi enabled</option>
                             </select>
                         </div>
+                    </div>
+
+                    <!-- Optional Add-ons -->
+                    <div class="section" id="optional-addons-section" style="display: none;">
+                        <div class="section-title">Optional Add-ons</div>
+                        <div id="optional-addons-container"></div>
                     </div>
 
                     <!-- Business Settings -->
@@ -626,15 +837,145 @@
     </div>
 
     <script>
+        // ========================================
+        // COMPANY CONFIGURATION - Edit during onboarding
+        // Remove sections not needed for this client
+        // ========================================
+        const COMPANY_CONFIG = {
+            companyName: "123 Power Electric",
+            
+            includedFootage: 20, // Default distance included in base price
+            
+            // OPTIONAL: Remove this entire block if company has no add-ons
+            optionalAddons: [
+                { name: "Smart Home Integration", price: 500, description: "Connect charger to home automation" },
+                { name: "Surge Protection Device", price: 350, description: "Whole-home surge protection" },
+                { name: "GFCI Outlet Upgrade", price: 75, description: "Ground fault circuit interrupter" }
+            ],
+            
+            // OPTIONAL: Remove this entire block if company has no rebates
+            rebatesAndIncentives: [
+                { name: "Federal Tax Credit", amount: 1000, description: "30% of installation cost, up to $1,000" },
+                { name: "Georgia Power Rebate", amount: 250, description: "Utility company incentive" }
+            ],
+            
+            // OPTIONAL: Remove this entire block if company doesn't want financing displayed
+            financingOptions: [
+                { term: "12 months", payment: "$404.83/month", apr: "0% APR" },
+                { term: "24 months", payment: "$212.44/month", apr: "5.9% APR" },
+                { term: "36 months", payment: "$149.24/month", apr: "7.9% APR" }
+            ],
+            
+            // OPTIONAL: Remove this entire block if company doesn't want to display this
+            whatsIncluded: [
+                "Complete Installation Package:",
+                [
+                    "Professional site assessment and installation planning",
+                    "Electrical evaluation",
+                    "Standard wiring up to 20ft"
+                ],
+                "Project Management:",
+                [
+                    "Consultation/Design",
+                    "Site inspection",
+                    "Dedicated project manager",
+                    "Quality assurance"
+                ],
+                "Level 2 EV charging station installation",
+                "Connection to your electrical panel",
+                "Breaker installation and grounding",
+                "Full permitting and inspection coordination",
+                "Testing and commissioning of the charger",
+                "Cleanup of work area",
+                "1-year workmanship warranty",
+                "Ongoing technical support"
+            ]
+        };
+        
+        // EV Charging Requirements Lookup Table
+        const EV_CHARGING_SPECS = {
+            "Tesla Model 3": "Level 2, 240V, 32-48A recommended",
+            "Tesla Model Y": "Level 2, 240V, 32-48A recommended",
+            "Tesla Model S": "Level 2, 240V, 48-60A recommended",
+            "Tesla Model X": "Level 2, 240V, 48-60A recommended",
+            "Chevrolet Bolt": "Level 2, 240V, 32A max",
+            "Chevrolet Bolt EUV": "Level 2, 240V, 32A max",
+            "Ford Mustang Mach-E": "Level 2, 240V, 48A max",
+            "Ford F-150 Lightning": "Level 2, 240V, 80A max",
+            "Nissan Leaf": "Level 2, 240V, 32A max",
+            "Hyundai Ioniq 5": "Level 2, 240V, 48A max",
+            "Hyundai Kona Electric": "Level 2, 240V, 32A max",
+            "Kia EV6": "Level 2, 240V, 48A max",
+            "Volkswagen ID.4": "Level 2, 240V, 48A max",
+            "Rivian R1T": "Level 2, 240V, 48A max",
+            "Rivian R1S": "Level 2, 240V, 48A max",
+            "BMW i4": "Level 2, 240V, 48A max",
+            "Audi e-tron": "Level 2, 240V, 48A max",
+            "Mercedes EQS": "Level 2, 240V, 48A max",
+            "Porsche Taycan": "Level 2, 240V, 48A max"
+        };
+        
+        // State Sales Tax Rates (state tax only, not including local)
+        const STATE_SALES_TAX = {
+            "AL": 4.0, "AK": 0.0, "AZ": 5.6, "AR": 6.5, "CA": 7.25,
+            "CO": 2.9, "CT": 6.35, "DE": 0.0, "FL": 6.0, "GA": 4.0,
+            "HI": 4.0, "ID": 6.0, "IL": 6.25, "IN": 7.0, "IA": 6.0,
+            "KS": 6.5, "KY": 6.0, "LA": 4.45, "ME": 5.5, "MD": 6.0,
+            "MA": 6.25, "MI": 6.0, "MN": 6.875, "MS": 7.0, "MO": 4.225,
+            "MT": 0.0, "NE": 5.5, "NV": 6.85, "NH": 0.0, "NJ": 6.625,
+            "NM": 5.125, "NY": 4.0, "NC": 4.75, "ND": 5.0, "OH": 5.75,
+            "OK": 4.5, "OR": 0.0, "PA": 6.0, "RI": 7.0, "SC": 6.0,
+            "SD": 4.5, "TN": 7.0, "TX": 6.25, "UT": 6.1, "VT": 6.0,
+            "VA": 5.3, "WA": 6.5, "WV": 6.0, "WI": 5.0, "WY": 4.0
+        };
+
         const AIRTABLE_TOKEN = 'AIRTABLE_PAT';
         const BASE_ID = 'appMDzE57TJ4B2h79';
         const PROJECTS_TABLE = 'tblPNJ7EUqqpuTn5h';
         const PHOTOS_TABLE = 'tblI6YQVPe9yPYNhC';
         
         let currentProject = null;
+        let selectedAddons = [];
 
         // Load projects on page load
-        window.addEventListener('DOMContentLoaded', loadProjects);
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+            initializeOptionalAddons();
+        });
+
+        function initializeOptionalAddons() {
+            if (!COMPANY_CONFIG.optionalAddons) return;
+            
+            const container = document.getElementById('optional-addons-container');
+            const section = document.getElementById('optional-addons-section');
+            
+            COMPANY_CONFIG.optionalAddons.forEach((addon, index) => {
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'checkbox-group';
+                checkboxDiv.innerHTML = `
+                    <input type="checkbox" id="addon-${index}" onchange="toggleAddon(${index})">
+                    <label for="addon-${index}">
+                        <strong>${addon.name}</strong>
+                        <br><small>${addon.description}</small>
+                    </label>
+                    <span class="checkbox-price">${addon.price.toFixed(2)}</span>
+                `;
+                container.appendChild(checkboxDiv);
+            });
+            
+            section.style.display = 'block';
+        }
+
+        function toggleAddon(index) {
+            const checkbox = document.getElementById(`addon-${index}`);
+            const addon = COMPANY_CONFIG.optionalAddons[index];
+            
+            if (checkbox.checked) {
+                selectedAddons.push(addon);
+            } else {
+                selectedAddons = selectedAddons.filter(a => a.name !== addon.name);
+            }
+        }
 
         async function loadProjects() {
             try {
@@ -948,6 +1289,7 @@
             const distance = parseFloat(document.getElementById('distance').value) || 20;
             const conduitType = document.getElementById('conduitType').value;
             const chargerType = document.getElementById('chargerType').value;
+            const panelType = document.getElementById('panelType').value;
             const panelCapacity = parseInt(document.getElementById('panelCapacity').value) || 200;
             const availableSlots = parseInt(document.getElementById('availableSlots').value) || 3;
             const panelAge = document.getElementById('panelAge').value;
@@ -961,12 +1303,20 @@
                 'concealed': 'Concealed/In-Wall',
                 'underground': 'Underground'
             };
+            
+            const panelTypeLabels = {
+                'standard': 'Standard Circuit Breaker',
+                'fuse': 'Fuse Box',
+                'subpanel': 'Subpanel',
+                'main': 'Main Service Panel'
+            };
 
             // Base costs for materials
             const materialsCost = 650; // Base charger + materials
             
             // Distance-based conduit costs
-            const baseCost = 250; // Base cost for 20ft (covers basic conduit and wiring)
+            const includedFootage = COMPANY_CONFIG.includedFootage || 20;
+            const baseCost = 250; // Base cost for included footage
             let conduitMultiplier = 1.0;
             
             if (conduitType === 'concealed') {
@@ -978,19 +1328,44 @@
             // Calculate conduit cost
             let distanceCost = baseCost * conduitMultiplier;
             
-            // Add cost for additional distance beyond 20ft
-            if (distance > 20) {
-                const extraFeet = distance - 20;
+            // Track additional services
+            let additionalServices = [];
+            
+            // Add cost for additional distance beyond included footage
+            if (distance > includedFootage) {
+                const extraFeet = distance - includedFootage;
                 const costPerFoot = 12 * conduitMultiplier;
-                distanceCost += extraFeet * costPerFoot;
+                const extraDistanceCost = extraFeet * costPerFoot;
+                distanceCost += extraDistanceCost;
+                additionalServices.push({
+                    name: `Extra Wiring (${extraFeet}ft beyond included ${includedFootage}ft)`,
+                    cost: extraDistanceCost
+                });
             }
 
             // Panel upgrade cost if needed
             let panelUpgradeCost = 0;
             if (availableSlots === 0) {
                 panelUpgradeCost = 1800;
+                additionalServices.push({
+                    name: 'Electrical Panel Upgrade (No available slots)',
+                    cost: panelUpgradeCost
+                });
             } else if (panelAge === 'old' && panelCapacity < 200) {
                 panelUpgradeCost = 1200;
+                additionalServices.push({
+                    name: 'Electrical Panel Upgrade (Panel age/capacity)',
+                    cost: panelUpgradeCost
+                });
+            }
+            
+            // NEMA outlet additional cost
+            if (chargerType === 'nema') {
+                const nemaOutletCost = 150;
+                additionalServices.push({
+                    name: 'NEMA Outlet Installation',
+                    cost: nemaOutletCost
+                });
             }
 
             // Labor calculations
@@ -1011,14 +1386,35 @@
 
             // Permit cost
             const permitCost = fields['Permit Required'] ? 235 : 0;
+            
+            // Calculate additional services total
+            const additionalServicesCost = additionalServices.reduce((sum, service) => sum + service.cost, 0);
+            
+            // Calculate optional add-ons total
+            const addonsCost = selectedAddons.reduce((sum, addon) => sum + addon.price, 0);
 
-            // Calculate totals
-            const subtotal = materialsCost + distanceCost + panelUpgradeCost + laborCost;
+            // Calculate subtotal (before tax and markup)
+            const subtotal = materialsCost + distanceCost + laborCost;
             const markupAmount = subtotal * (markup / 100);
-            const total = subtotal + markupAmount + permitCost;
+            
+            // Calculate tax
+            const salesTaxRate = STATE_SALES_TAX[state] || 0;
+            const taxableAmount = subtotal + markupAmount + permitCost + addonsCost;
+            const salesTax = taxableAmount * (salesTaxRate / 100);
+            
+            // Calculate total
+            const total = taxableAmount + salesTax;
 
             // Display professional quote
             const quoteDate = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            const validUntilDate = new Date();
+            validUntilDate.setDate(validUntilDate.getDate() + 30);
+            const validUntil = validUntilDate.toLocaleDateString('en-US', { 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
@@ -1031,14 +1427,25 @@
                 'carport': 'Carport',
                 'exterior-wall': 'Exterior Wall'
             };
+            
+            // Get vehicle and charging requirements
+            const evMake = fields['EV Make'] || '';
+            const evModel = fields['EV Model'] || '';
+            const fullVehicleName = `${evMake} ${evModel}`.trim();
+            const chargingReq = EV_CHARGING_SPECS[fullVehicleName] || 'Level 2, 240V';
 
-            document.getElementById('quote-content').innerHTML = `
+            let quoteHtml = `
                 <div class="quote-header">
+                    <div class="company-name">${COMPANY_CONFIG.companyName}</div>
                     <h2>Professional Installation Quote</h2>
                     <div class="quote-meta">
                         <div><strong>Quote ID:</strong> ${fields['Quote ID'] || 'Pending'}</div>
                         <div><strong>Date:</strong> ${quoteDate}</div>
                     </div>
+                </div>
+                
+                <div class="validity-notice">
+                    <strong>⏰ Quote Valid Until:</strong> ${validUntil} (30 days from quote date)
                 </div>
 
                 <div class="customer-section">
@@ -1060,20 +1467,30 @@
                             <span class="detail-label">Address</span>
                             <span class="detail-value">${fields['Customer Address'] || 'N/A'}</span>
                         </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Vehicle</span>
-                            <span class="detail-value">${fields['EV Make'] || ''} ${fields['EV Model'] || ''}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Installation Location</span>
-                            <span class="detail-value">${installLocationLabels[installLocation]}</span>
-                        </div>
                     </div>
                 </div>
 
                 <div class="installation-overview">
                     <h3>Installation Overview</h3>
                     <div class="overview-grid">
+            `;
+            
+            // Add vehicle if it exists
+            if (fullVehicleName) {
+                quoteHtml += `
+                    <div class="overview-item">
+                        <div class="overview-label">Vehicle to Charge</div>
+                        <div class="overview-value">${fullVehicleName}</div>
+                        <div style="font-size: 0.85rem; color: #7f8c8d; margin-top: 5px;">${chargingReq}</div>
+                    </div>
+                `;
+            }
+            
+            quoteHtml += `
+                        <div class="overview-item">
+                            <div class="overview-label">Installation Location</div>
+                            <div class="overview-value">${installLocationLabels[installLocation]}</div>
+                        </div>
                         <div class="overview-item">
                             <div class="overview-label">Distance to Panel</div>
                             <div class="overview-value">${distance} feet</div>
@@ -1083,8 +1500,8 @@
                             <div class="overview-value">${conduitTypeLabels[conduitType]}</div>
                         </div>
                         <div class="overview-item">
-                            <div class="overview-label">Estimated Duration</div>
-                            <div class="overview-value">${laborHours} hours</div>
+                            <div class="overview-label">Panel Type</div>
+                            <div class="overview-value">${panelTypeLabels[panelType]}</div>
                         </div>
                         <div class="overview-item">
                             <div class="overview-label">Panel Capacity</div>
@@ -1095,6 +1512,10 @@
                             <div class="overview-value">${availableSlots === 0 ? 'None' : availableSlots}</div>
                         </div>
                         <div class="overview-item">
+                            <div class="overview-label">Estimated Duration</div>
+                            <div class="overview-value">${laborHours} hours</div>
+                        </div>
+                        <div class="overview-item">
                             <div class="overview-label">Permit Required</div>
                             <div class="overview-value">${fields['Permit Required'] ? 'Required' : 'Not required'}</div>
                         </div>
@@ -1103,55 +1524,154 @@
                 
                 <div class="quote-breakdown">
                     <div class="breakdown-header">
-                        <h3>Cost Breakdown</h3>
+                        <h3>Detailed Quote Breakdown</h3>
                     </div>
+                    
+                    <div class="quote-section-header">Base Installation Services</div>
                     <div class="quote-item">
-                        <span class="quote-item-label">Professional Labor & Installation</span>
-                        <span class="quote-item-value">$${laborCost.toFixed(2)}</span>
+                        <span class="quote-item-label">Professional Labor & Installation (${laborHours} hours @ ${laborRate}/hr)</span>
+                        <span class="quote-item-value">${laborCost.toFixed(2)}</span>
                     </div>
                     <div class="quote-item">
                         <span class="quote-item-label">Materials & Equipment</span>
-                        <span class="quote-item-value">$${materialsCost.toFixed(2)}</span>
+                        <span class="quote-item-value">${materialsCost.toFixed(2)}</span>
                     </div>
                     <div class="quote-item">
-                        <span class="quote-item-label">Conduit & Wiring (${distance}ft, ${conduitTypeLabels[conduitType]})</span>
-                        <span class="quote-item-value">$${distanceCost.toFixed(2)}</span>
+                        <span class="quote-item-label">Conduit & Wiring (${includedFootage}ft included, ${conduitTypeLabels[conduitType]})</span>
+                        <span class="quote-item-value">${distanceCost.toFixed(2)}</span>
                     </div>
-                    ${panelUpgradeCost > 0 ? `<div class="quote-item"><span class="quote-item-label">Electrical Panel Upgrade</span><span class="quote-item-value">$${panelUpgradeCost.toFixed(2)}</span></div>` : ''}
+            `;
+            
+            // Add additional services section if there are any
+            if (additionalServices.length > 0) {
+                quoteHtml += '<div class="quote-section-header">Additional Services Required</div>';
+                additionalServices.forEach(service => {
+                    quoteHtml += `
+                        <div class="quote-item">
+                            <span class="quote-item-label">${service.name}</span>
+                            <span class="quote-item-value">${service.cost.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Add optional add-ons if selected
+            if (selectedAddons.length > 0) {
+                quoteHtml += '<div class="quote-section-header">Optional Add-ons Selected</div>';
+                selectedAddons.forEach(addon => {
+                    quoteHtml += `
+                        <div class="quote-item">
+                            <span class="quote-item-label">${addon.name}</span>
+                            <span class="quote-item-value">${addon.price.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            quoteHtml += `
                     <div class="quote-subtotal">
                         <span>Subtotal</span>
-                        <span>$${subtotal.toFixed(2)}</span>
+                        <span>${subtotal.toFixed(2)}</span>
                     </div>
                     <div class="quote-item">
                         <span class="quote-item-label">Professional Services & Warranty (${markup}%)</span>
-                        <span class="quote-item-value">$${markupAmount.toFixed(2)}</span>
+                        <span class="quote-item-value">${markupAmount.toFixed(2)}</span>
                     </div>
                     <div class="quote-item">
                         <span class="quote-item-label">Permit & Inspection Fees</span>
-                        <span class="quote-item-value">$${permitCost.toFixed(2)}</span>
+                        <span class="quote-item-value">${permitCost.toFixed(2)}</span>
+                    </div>
+                    <div class="quote-item">
+                        <span class="quote-item-label">Sales Tax (${state} ${salesTaxRate}%)</span>
+                        <span class="quote-item-value">${salesTax.toFixed(2)}</span>
                     </div>
                     <div class="quote-total">
                         <span>Total Investment</span>
-                        <span>$${total.toFixed(2)}</span>
+                        <span>${total.toFixed(2)}</span>
                     </div>
                 </div>
-                
-                <div class="whats-included">
-                    <h3>✓ What's Included</h3>
-                    <ul>
-                        <li>Professional site assessment and installation planning</li>
-                        <li>All necessary electrical wiring and conduit</li>
-                        <li>Level 2 EV charging station installation</li>
-                        <li>Connection to your electrical panel</li>
-                        <li>Full permitting and inspection coordination</li>
-                        <li>Testing and commissioning of the charger</li>
-                        <li>Cleanup of work area</li>
-                        <li>1-year workmanship warranty</li>
-                        <li>Ongoing technical support</li>
-                    </ul>
-                </div>
             `;
+            
+            // Add rebates and incentives if configured
+            if (COMPANY_CONFIG.rebatesAndIncentives) {
+                quoteHtml += `
+                    <div class="rebates-section">
+                        <h3>Available Rebates & Incentives</h3>
+                `;
+                COMPANY_CONFIG.rebatesAndIncentives.forEach(rebate => {
+                    quoteHtml += `
+                        <div class="rebate-item">
+                            <div class="rebate-name">${rebate.name}</div>
+                            <div class="rebate-amount">-${rebate.amount.toFixed(2)}</div>
+                            <div class="rebate-description">${rebate.description}</div>
+                        </div>
+                    `;
+                });
+                const totalAfterRebates = total - COMPANY_CONFIG.rebatesAndIncentives.reduce((sum, r) => sum + r.amount, 0);
+                quoteHtml += `
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 2px solid #28a745;">
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem;">
+                                <span>Your Net Cost:</span>
+                                <span style="color: #28a745;">${totalAfterRebates.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add financing options if configured
+            if (COMPANY_CONFIG.financingOptions) {
+                quoteHtml += `
+                    <div class="financing-section">
+                        <h3>Financing Options</h3>
+                        <div class="financing-plans">
+                `;
+                COMPANY_CONFIG.financingOptions.forEach(plan => {
+                    quoteHtml += `
+                        <div class="financing-plan">
+                            <div class="plan-term">${plan.term}</div>
+                            <div class="plan-payment">${plan.payment}</div>
+                            <div class="plan-apr">${plan.apr}</div>
+                        </div>
+                    `;
+                });
+                quoteHtml += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Add what's included if configured
+            if (COMPANY_CONFIG.whatsIncluded) {
+                quoteHtml += `
+                    <div class="whats-included">
+                        <h3>What's Included</h3>
+                        <ul>
+                `;
+                
+                function renderList(items) {
+                    let html = '';
+                    items.forEach(item => {
+                        if (Array.isArray(item)) {
+                            html += '<ul>';
+                            html += renderList(item);
+                            html += '</ul>';
+                        } else {
+                            html += `<li>${item}</li>`;
+                        }
+                    });
+                    return html;
+                }
+                
+                quoteHtml += renderList(COMPANY_CONFIG.whatsIncluded);
+                
+                quoteHtml += `
+                        </ul>
+                    </div>
+                `;
+            }
 
+            document.getElementById('quote-content').innerHTML = quoteHtml;
             document.getElementById('quote-content').style.display = 'block';
             
             // Scroll to quote
