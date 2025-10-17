@@ -979,7 +979,7 @@
 
         async function loadProjects() {
             try {
-                const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${PROJECTS_TABLE}?view=Grid%20view`, {
+                const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${PROJECTS_TABLE}?view=Default%20view`, {
                     headers: {
                         'Authorization': `Bearer ${AIRTABLE_TOKEN}`
                     }
