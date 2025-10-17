@@ -21,8 +21,8 @@ export default async function handler(req, res) {
     }
 
     const AIRTABLE_TOKEN = 'AIRTABLE_PAT';
-    const BASE_ID = 'appMDzE57TJ4B2h79';
-    const QUOTES_TABLE = 'tblpLQ0y4PVr3hMjM';
+    const BASE_ID = 'applWK4PXoo86ajvD';
+    const QUOTES_TABLE = 'Quotes';
 
     try {
         // Check if a quote already exists for this project
