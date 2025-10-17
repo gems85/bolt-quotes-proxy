@@ -3,7 +3,7 @@
 
 const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
 const BASE_ID = process.env.BASE_ID;
-const PHOTOS_TABLE = 'Photos';
+const PHOTOS_TABLE = process.env.PHOTOS_TABLE;
 
 export default async function handler(req, res) {
     // Enable CORS
