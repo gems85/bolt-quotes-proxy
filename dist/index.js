@@ -5,10 +5,10 @@ import express2 from "express";
 import { createServer } from "http";
 
 // server/airtable.ts
-var AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
-var AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID || "appAzWKnR9zyGX5dC";
-if (!AIRTABLE_API_KEY) {
-  console.error("\u274C AIRTABLE_API_KEY is not set in environment variables!");
+var AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
+var AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+if (!AIRTABLE_TOKEN) {
+  console.error("\u274C AIRTABLE_TOKEN is not set in environment variables!");
   console.error("Please add your Airtable Personal Access Token to Replit Secrets");
 }
 if (!AIRTABLE_BASE_ID) {
@@ -22,15 +22,15 @@ var COMPANY_CONFIG_TABLE = process.env.COMPANY_CONFIG_TABLE || "COMPANY_CONFIG";
 var EV_SPECS_TABLE = process.env.EV_SPECS_TABLE || "EV_CHARGING_SPECS";
 console.log("\u2713 Airtable Configuration:");
 console.log(`  Base ID: ${AIRTABLE_BASE_ID}`);
-console.log(`  API Key: ${AIRTABLE_API_KEY ? "***" + AIRTABLE_API_KEY.slice(-4) : "NOT SET"}`);
+console.log(`  API Key: ${AIRTABLE_TOKEN ? "***" + AIRTABLE_TOKEN.slice(-4) : "NOT SET"}`);
 console.log(`  Tables: ${PROJECTS_TABLE}, ${PHOTOS_TABLE}, ${QUOTES_TABLE}`);
 async function airtableRequest(endpoint, method = "GET", body) {
-  if (!AIRTABLE_API_KEY) {
-    throw new Error("Airtable is not configured. Please add AIRTABLE_API_KEY to your environment variables.");
+  if (!AIRTABLE_TOKEN) {
+    throw new Error("Airtable is not configured. Please add AIRTABLE_TOKEN to your environment variables.");
   }
   const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${endpoint}`;
   const headers = {
-    "Authorization": `Bearer ${AIRTABLE_API_KEY}`,
+    "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
     "Content-Type": "application/json"
   };
   const options = {
