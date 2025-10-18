@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bolt Quotes - Quote Generator</title>
+    <title>⚡Bolt Quotes - Quote Generator</title>
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
@@ -218,6 +218,33 @@
             border-top: 2px solid #1e3a8a;
         }
 
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .photo-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .photo-label {
+            padding: 8px;
+            background: #f3f4f6;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
         .hidden {
             display: none;
         }
@@ -270,6 +297,15 @@
                     </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Customer Info & Photos -->
+        <div id="customerSection" class="card hidden">
+            <h2 style="margin-bottom: 15px; color: #1e3a8a;">Customer Information</h2>
+            <div id="customerInfo"></div>
+            
+            <h3 style="margin-top: 30px; margin-bottom: 15px; color: #1e3a8a;">Installation Photos</h3>
+            <div id="photosGrid" class="photos-grid"></div>
         </div>
 
         <!-- Assessment Form -->
@@ -347,6 +383,8 @@
 
     <script>
         let currentProject = null;
+        let currentProjectDetails = null;
+        let currentPhotos = [];
         let currentQuote = null;
 
         // Load projects on page load
@@ -396,18 +434,136 @@
             }
         }
 
-        document.getElementById('projectSelect').addEventListener('change', (e) => {
+        document.getElementById('projectSelect').addEventListener('change', async (e) => {
             const selectedOption = e.target.selectedOptions[0];
             if (selectedOption && selectedOption.dataset.project) {
                 currentProject = JSON.parse(selectedOption.dataset.project);
-                document.getElementById('assessmentForm').classList.remove('hidden');
                 hideError();
+                
+                // Load full project details and photos
+                await loadProjectDetails(currentProject.id);
+                await loadPhotos(currentProject.id);
+                
+                // Show customer section and assessment form
+                document.getElementById('customerSection').classList.remove('hidden');
+                document.getElementById('assessmentForm').classList.remove('hidden');
             } else {
                 currentProject = null;
+                currentProjectDetails = null;
+                currentPhotos = [];
+                document.getElementById('customerSection').classList.add('hidden');
                 document.getElementById('assessmentForm').classList.add('hidden');
                 document.getElementById('quotePreview').classList.add('hidden');
             }
         });
+
+        async function loadProjectDetails(projectId) {
+            try {
+                const response = await fetch(`/api/get-project?id=${projectId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load project details');
+                }
+
+                currentProjectDetails = data.project;
+                displayCustomerInfo(data.project);
+
+            } catch (error) {
+                console.error('Error loading project details:', error);
+                showError('Failed to load project details: ' + error.message, error);
+            }
+        }
+
+        async function loadPhotos(projectId) {
+            try {
+                const response = await fetch(`/api/get-photos?projectId=${projectId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load photos');
+                }
+
+                currentPhotos = data.photos || [];
+                displayPhotos(data.photos);
+
+            } catch (error) {
+                console.error('Error loading photos:', error);
+                // Don't show error if photos are just missing - that's expected for some projects
+                if (error.message.includes('404')) {
+                    showInfo('No photos uploaded yet for this project.');
+                } else {
+                    showError('Failed to load photos: ' + error.message, error);
+                }
+            }
+        }
+
+        function displayCustomerInfo(project) {
+            const fields = project.fields;
+            const customerInfo = document.getElementById('customerInfo');
+            
+            customerInfo.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div>
+                        <p style="font-weight: 600; color: #6b7280; font-size: 12px;">Customer Name</p>
+                        <p style="color: #1f2937;">${fields['Customer Name'] || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600; color: #6b7280; font-size: 12px;">Email</p>
+                        <p style="color: #1f2937;">${fields['Customer Email'] || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600; color: #6b7280; font-size: 12px;">Phone</p>
+                        <p style="color: #1f2937;">${fields['Customer Phone'] || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600; color: #6b7280; font-size: 12px;">Address</p>
+                        <p style="color: #1f2937;">${fields['Customer Address'] || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600; color: #6b7280; font-size: 12px;">EV Vehicle</p>
+                        <p style="color: #1f2937;">${fields['EV Make'] || ''} ${fields['EV Model'] || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <p style="font-weight: 600; color: #6b7280; font-size: 12px;">Install Location</p>
+                        <p style="color: #1f2937;">${fields['Install Location'] || 'N/A'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function displayPhotos(photos) {
+            const photosGrid = document.getElementById('photosGrid');
+            
+            if (!photos || photos.length === 0) {
+                photosGrid.innerHTML = '<p style="color: #6b7280;">No photos uploaded yet.</p>';
+                return;
+            }
+
+            photosGrid.innerHTML = photos.map(photo => {
+                const photoFile = photo.fields.File?.[0];
+                const photoType = photo.fields['Photo Type'] || 'Photo';
+                
+                if (!photoFile) return '';
+                
+                return `
+                    <div class="photo-item">
+                        <img src="${photoFile.url}" alt="${photoType}" loading="lazy">
+                        <div class="photo-label">${photoType}</div>
+                    </div>
+                `;
+            }).join('');
+        }
 
         async function generateQuote() {
             if (!currentProject) {
@@ -451,6 +607,9 @@
                 currentQuote = data.quote;
                 displayQuote(data.quote);
                 
+                // Update project status
+                await updateProjectStatus(currentProject.id, 'Quote Draft');
+                
                 document.getElementById('quotePreview').classList.remove('hidden');
                 document.getElementById('quotePreview').scrollIntoView({ behavior: 'smooth' });
 
@@ -460,6 +619,22 @@
             } finally {
                 generateBtn.disabled = false;
                 generateBtnText.textContent = 'Generate Quote';
+            }
+        }
+
+        async function updateProjectStatus(projectId, status) {
+            try {
+                const response = await fetch('/api/update-project-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectId, status })
+                });
+
+                if (!response.ok) {
+                    console.warn('Failed to update project status:', response.statusText);
+                }
+            } catch (error) {
+                console.warn('Error updating project status:', error);
             }
         }
 
