@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡Bolt Quotes - Quote Generator</title>
+    <title>EV Charger Quote Generator</title>
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
@@ -272,7 +272,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>⚡ EV Charger Quote Generator</h1>
+            <h1>⚡ Bolt Quotes - Quote Generator</h1>
             <p>Professional EV Charger Installation Quotes</p>
         </div>
 
@@ -398,7 +398,7 @@
             hideError();
 
             try {
-                const response = await fetch('/api/get-projects');
+                const response = await fetch('/api/projects');
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -410,7 +410,7 @@
                     throw new Error(data.error || 'Failed to load projects');
                 }
 
-                const projects = data.projects || [];
+                const projects = data.data || [];
                 const select = document.getElementById('projectSelect');
                 select.innerHTML = '<option value="">-- Select a project --</option>';
 
@@ -459,7 +459,7 @@
 
         async function loadProjectDetails(projectId) {
             try {
-                const response = await fetch(`/api/get-project?id=${projectId}`);
+                const response = await fetch(`/api/projects/${projectId}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -471,8 +471,8 @@
                     throw new Error(data.error || 'Failed to load project details');
                 }
 
-                currentProjectDetails = data.project;
-                displayCustomerInfo(data.project);
+                currentProjectDetails = data.data;
+                displayCustomerInfo(data.data);
 
             } catch (error) {
                 console.error('Error loading project details:', error);
@@ -482,7 +482,7 @@
 
         async function loadPhotos(projectId) {
             try {
-                const response = await fetch(`/api/get-photos?projectId=${projectId}`);
+                const response = await fetch(`/api/photos/${projectId}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -494,8 +494,8 @@
                     throw new Error(data.error || 'Failed to load photos');
                 }
 
-                currentPhotos = data.photos || [];
-                displayPhotos(data.photos);
+                currentPhotos = data.data || [];
+                displayPhotos(data.data);
 
             } catch (error) {
                 console.error('Error loading photos:', error);
@@ -588,7 +588,7 @@
                     permitRequired: document.getElementById('permitRequired').checked
                 };
 
-                const response = await fetch('/api/get-or-create-quote', {
+                const response = await fetch('/api/generate-quote', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(quoteData)
@@ -604,8 +604,8 @@
                     throw new Error(data.error || 'Failed to generate quote');
                 }
 
-                currentQuote = data.quote;
-                displayQuote(data.quote);
+                currentQuote = data.data;
+                displayQuote(data.data);
                 
                 // Update project status
                 await updateProjectStatus(currentProject.id, 'Quote Draft');
@@ -624,10 +624,10 @@
 
         async function updateProjectStatus(projectId, status) {
             try {
-                const response = await fetch('/api/update-project-status', {
-                    method: 'POST',
+                const response = await fetch(`/api/projects/${projectId}/status`, {
+                    method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ projectId, status })
+                    body: JSON.stringify({ status })
                 });
 
                 if (!response.ok) {
@@ -771,7 +771,7 @@
             // Add troubleshooting steps
             const steps = [];
             if (message.includes('INVALID_PERMISSIONS') || message.includes('authentication')) {
-                steps.push('Check: AIRTABLE_TOKEN is set correctly in Vercel environment variables');
+                steps.push('Check: AIRTABLE_API_KEY is set correctly in Vercel environment variables');
                 steps.push('Check: API token has permission to access this base');
                 steps.push('Check: Base ID is correct (should start with "app")');
                 steps.push('Check: Table names match exactly (PROJECTS, PHOTOS, QUOTES, etc.)');
