@@ -6,13 +6,13 @@ import { createServer } from "http";
 
 // server/airtable.ts
 var AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-var AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID;
+var BASE_ID = process.env.BASE_ID;
 if (!AIRTABLE_TOKEN) {
   console.error("\u274C AIRTABLE_TOKEN is not set in environment variables!");
   console.error("Please add your Airtable Personal Access Token to Replit Secrets");
 }
-if (!AIRTABLE_BASE_ID) {
-  console.error("\u274C AIRTABLE_BASE_ID is not set in environment variables!");
+if (!BASE_ID) {
+  console.error("\u274C BASE_ID is not set in environment variables!");
   console.error("Please add your Airtable Base ID to Replit Secrets or .env file");
 }
 var PROJECTS_TABLE = process.env.PROJECTS_TABLE || "PROJECTS";
@@ -21,14 +21,14 @@ var QUOTES_TABLE = process.env.QUOTES_TABLE || "QUOTES";
 var COMPANY_CONFIG_TABLE = process.env.COMPANY_CONFIG_TABLE || "COMPANY_CONFIG";
 var EV_SPECS_TABLE = process.env.EV_SPECS_TABLE || "EV_CHARGING_SPECS";
 console.log("\u2713 Airtable Configuration:");
-console.log(`  Base ID: ${AIRTABLE_BASE_ID}`);
+console.log(`  Base ID: ${BASE_ID}`);
 console.log(`  API Key: ${AIRTABLE_TOKEN ? "***" + AIRTABLE_TOKEN.slice(-4) : "NOT SET"}`);
 console.log(`  Tables: ${PROJECTS_TABLE}, ${PHOTOS_TABLE}, ${QUOTES_TABLE}`);
 async function airtableRequest(endpoint, method = "GET", body) {
   if (!AIRTABLE_TOKEN) {
     throw new Error("Airtable is not configured. Please add AIRTABLE_TOKEN to your environment variables.");
   }
-  const url = `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${endpoint}`;
+  const url = `https://api.airtable.com/v0/${BASE_ID}/${endpoint}`;
   const headers = {
     "Authorization": `Bearer ${AIRTABLE_TOKEN}`,
     "Content-Type": "application/json"
@@ -46,7 +46,7 @@ async function airtableRequest(endpoint, method = "GET", body) {
     if (response.status === 403 || response.status === 401) {
       throw new Error(`Airtable authentication failed. Please check:
 1. Your API key is valid
-2. The API key has access to base ${AIRTABLE_BASE_ID}
+2. The API key has access to base ${BASE_ID}
 3. The table names are correct (${PROJECTS_TABLE}, ${PHOTOS_TABLE}, etc.)
 
 Error: ${errorText}`);
