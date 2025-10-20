@@ -629,19 +629,45 @@
                 return;
             }
 
-            photosGrid.innerHTML = photos.map(photo => {
-                const photoFile = photo.fields.File?.[0];
-                const photoType = photo.fields['Photo Type'] || 'Photo';
+            console.log('Displaying photos:', photos);
+
+            const photoHTML = photos.map(photo => {
+                // Try different possible field names for the attachment
+                const photoFile = photo.fields.File?.[0] || 
+                                 photo.fields.Photo?.[0] || 
+                                 photo.fields.Attachment?.[0] ||
+                                 photo.fields.Image?.[0];
                 
-                if (!photoFile) return '';
+                const photoType = photo.fields['Photo Type'] || 
+                                 photo.fields.Type || 
+                                 photo.fields['Image Type'] ||
+                                 'Photo';
+                
+                console.log('Photo data:', {
+                    photoType,
+                    hasFile: !!photoFile,
+                    fields: Object.keys(photo.fields),
+                    photoFile
+                });
+                
+                if (!photoFile || !photoFile.url) {
+                    console.warn('Photo has no file attachment:', photo.fields);
+                    return '';
+                }
                 
                 return `
                     <div class="photo-item">
-                        <img src="${photoFile.url}" alt="${photoType}" loading="lazy">
+                        <img src="${photoFile.url}" alt="${photoType}" loading="lazy" onerror="console.error('Failed to load image:', '${photoFile.url}')">
                         <div class="photo-label">${photoType}</div>
                     </div>
                 `;
             }).join('');
+            
+            if (!photoHTML || photoHTML.trim() === '') {
+                photosGrid.innerHTML = '<p style="color: #6b7280;">Photos found but no valid attachments. Check browser console for details.</p>';
+            } else {
+                photosGrid.innerHTML = photoHTML;
+            }
         }
 
         function generateQuoteLocally(formData, quoteId) {
@@ -988,7 +1014,7 @@
             // Add troubleshooting steps
             const steps = [];
             if (message.includes('INVALID_PERMISSIONS') || message.includes('authentication')) {
-                steps.push('Check: AIRTABLE_TOKEN is set correctly in Vercel environment variables');
+                steps.push('Check: AIRTABLE_API_KEY is set correctly in Vercel environment variables');
                 steps.push('Check: API token has permission to access this base');
                 steps.push('Check: Base ID is correct (should start with "app")');
                 steps.push('Check: Table names match exactly (PROJECTS, PHOTOS, QUOTES, etc.)');
