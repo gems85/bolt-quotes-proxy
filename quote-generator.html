@@ -312,45 +312,102 @@
         <div id="assessmentForm" class="card hidden">
             <h2 style="margin-bottom: 20px; color: #1e3a8a;">Installation Assessment</h2>
             
+            <!-- Property Information -->
+            <h3 style="color: #1e3a8a; font-size: 16px; margin-top: 20px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">Property Information</h3>
+            
+            <div class="form-group">
+                <label for="projectType">Project Type:</label>
+                <select id="projectType">
+                    <option value="residential">Residential</option>
+                    <option value="commercial">Commercial</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="state">State:</label>
+                <select id="state">
+                    <option value="GA">Georgia</option>
+                    <option value="FL">Florida</option>
+                    <option value="AL">Alabama</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="TN">Tennessee</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="installComplexity">Installation Complexity (Charger Location Notes):</label>
+                <input type="text" id="installComplexity" placeholder="e.g., 30 feet from panel, through finished wall">
+            </div>
+
+            <div class="form-group">
+                <label for="installLocation">Installation Location:</label>
+                <select id="installLocation">
+                    <option value="garage">Garage</option>
+                    <option value="driveway">Driveway</option>
+                    <option value="carport">Carport</option>
+                    <option value="exterior-wall">Exterior Wall</option>
+                </select>
+            </div>
+
+            <!-- Electrical Panel Assessment -->
+            <h3 style="color: #1e3a8a; font-size: 16px; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">Electrical Panel Assessment</h3>
+            
+            <div class="form-group">
+                <label for="panelType">Panel Type:</label>
+                <select id="panelType">
+                    <option value="standard">Standard Circuit Breaker</option>
+                    <option value="old-fuse">Old Fuse Box (Upgrade Required)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="panelAge">Panel Age:</label>
+                <select id="panelAge">
+                    <option value="0">Less than 5 years</option>
+                    <option value="5" selected>5-10 years</option>
+                    <option value="10">10-20 years</option>
+                    <option value="20">20+ years (Older Panel)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="panelCapacity">Panel Capacity (Amps):</label>
+                <input type="number" id="panelCapacity" value="200" min="60" max="400" step="20">
+            </div>
+
             <div class="form-group">
                 <label for="availableSlots">Available Breaker Slots:</label>
-                <input type="number" id="availableSlots" min="0" value="2">
-            </div>
-
-            <div class="form-group">
-                <label for="panelAge">Panel Age (years):</label>
-                <input type="number" id="panelAge" min="0" value="5">
-            </div>
-
-            <div class="form-group">
-                <label for="panelCapacity">Panel Capacity (amps):</label>
-                <select id="panelCapacity">
-                    <option value="100">100 amps</option>
-                    <option value="200" selected>200 amps</option>
-                    <option value="400">400 amps</option>
+                <select id="availableSlots">
+                    <option value="0">0 slots (Panel Upgrade Required)</option>
+                    <option value="1">1 slot</option>
+                    <option value="2" selected>2+ slots</option>
                 </select>
             </div>
 
+            <!-- Installation Conditions -->
+            <h3 style="color: #1e3a8a; font-size: 16px; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">Installation Conditions</h3>
+            
             <div class="form-group">
-                <label for="chargerType">Charger Type:</label>
-                <select id="chargerType">
-                    <option value="hardwired">Hardwired</option>
-                    <option value="nema">NEMA Outlet</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="conduitType">Conduit Type:</label>
+                <label for="conduitType">Conduit Run Type:</label>
                 <select id="conduitType">
-                    <option value="surface">Surface</option>
-                    <option value="concealed">Concealed</option>
-                    <option value="underground">Underground</option>
+                    <option value="surface">Surface Mount (Easiest)</option>
+                    <option value="concealed">Concealed (Through Wall)</option>
+                    <option value="underground">Underground Conduit</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="conduitFootage">Conduit Footage:</label>
-                <input type="number" id="conduitFootage" min="0" value="25">
+                <label for="conduitDistance">Conduit Distance (Feet):</label>
+                <select id="conduitDistance">
+                    <option value="10">Less than 10 feet</option>
+                    <option value="20">10-20 feet</option>
+                    <option value="30" selected>20-30 feet</option>
+                    <option value="50">30-50 feet</option>
+                    <option value="75">50-75 feet</option>
+                    <option value="100">75-100 feet</option>
+                    <option value="150">100+ feet</option>
+                </select>
             </div>
 
             <div class="form-group">
@@ -359,7 +416,29 @@
                 </label>
             </div>
 
-            <button class="button" onclick="generateQuote()">
+            <!-- Business Settings -->
+            <h3 style="color: #1e3a8a; font-size: 16px; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">Business Settings</h3>
+            
+            <div class="form-group">
+                <label for="chargerType">Charger Type/Model:</label>
+                <select id="chargerType">
+                    <option value="hardwired">Hardwired Charger</option>
+                    <option value="nema-14-50">NEMA 14-50 Outlet</option>
+                    <option value="nema-6-50">NEMA 6-50 Outlet</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="markup">Markup %:</label>
+                <select id="markup">
+                    <option value="15">15% - Competitive</option>
+                    <option value="20">20% - Standard</option>
+                    <option value="25" selected>25% - Premium</option>
+                    <option value="30">30% - High-end</option>
+                </select>
+            </div>
+
+            <button class="button" onclick="generateQuote()" style="margin-top: 20px;">
                 <span id="generateBtnText">Generate Quote</span>
             </button>
         </div>
@@ -566,15 +645,23 @@
         }
 
         function generateQuoteLocally(formData, quoteId) {
-            // Default pricing constants
-            const MATERIALS_COST = 800;
+            // Pricing constants
+            const CHARGER_COST = 600; // Base charger hardware
             const LABOR_RATE = 95;
-            const LABOR_HOURS = 4;
+            const BASE_LABOR_HOURS = 4;
             const CONDUIT_COST_PER_FOOT = 12;
             const INCLUDED_CONDUIT_FOOTAGE = 20;
             const PERMIT_COST = 150;
-            const NEMA_OUTLET_COST = 150;
-            const TAX_RATE = 0.04; // 4% sales tax
+            
+            // State tax rates
+            const stateTaxRates = {
+                'GA': 0.04,
+                'FL': 0.06,
+                'AL': 0.04,
+                'SC': 0.06,
+                'NC': 0.0475,
+                'TN': 0.07
+            };
             
             // Conduit multipliers
             const conduitMultipliers = {
@@ -583,43 +670,71 @@
                 'underground': 1.5
             };
             
+            // Calculate materials cost based on charger type
+            let materialsCost = CHARGER_COST;
+            if (formData.chargerType === 'nema-14-50' || formData.chargerType === 'nema-6-50') {
+                materialsCost += 150; // NEMA outlet installation cost
+            }
+            
             // Calculate panel upgrade cost
             let panelUpgradeCost = 0;
             if (formData.availableSlots === 0) {
-                panelUpgradeCost = 1800;
-            } else if (formData.panelAge >= 10 && formData.panelCapacity < 200) {
-                panelUpgradeCost = 1200;
+                panelUpgradeCost = 1800; // Full panel upgrade
+            } else if (formData.panelType === 'old-fuse') {
+                panelUpgradeCost = 2200; // Old fuse box requires full replacement
+            } else if (formData.panelAge >= 20 && formData.panelCapacity < 200) {
+                panelUpgradeCost = 1200; // Old panel with low capacity
             }
             
-            // Calculate NEMA outlet cost
-            const nemaOutletCost = formData.chargerType === 'nema' ? NEMA_OUTLET_COST : 0;
-            
             // Calculate conduit cost
-            const extraFootage = Math.max(0, formData.conduitFootage - INCLUDED_CONDUIT_FOOTAGE);
+            const totalFootage = formData.conduitDistance || 20;
+            const extraFootage = Math.max(0, totalFootage - INCLUDED_CONDUIT_FOOTAGE);
             const multiplier = conduitMultipliers[formData.conduitType] || 1.0;
             const conduitCost = extraFootage * CONDUIT_COST_PER_FOOT * multiplier;
             
-            // Calculate totals
-            const materials = MATERIALS_COST + nemaOutletCost;
-            const labor = LABOR_RATE * LABOR_HOURS;
+            // Calculate labor (add hours for complex installations)
+            let laborHours = BASE_LABOR_HOURS;
+            if (formData.conduitType === 'underground') laborHours += 2;
+            if (formData.conduitType === 'concealed') laborHours += 1;
+            if (totalFootage > 50) laborHours += 1;
+            
+            const laborCost = LABOR_RATE * laborHours;
+            
+            // Permit cost
             const permitCost = formData.permitRequired ? PERMIT_COST : 0;
             
-            const subtotal = materials + labor + conduitCost + panelUpgradeCost + permitCost;
-            const salesTax = subtotal * TAX_RATE;
+            // Calculate subtotal before markup
+            const subtotalBeforeMarkup = materialsCost + laborCost + conduitCost + panelUpgradeCost + permitCost;
+            
+            // Apply markup
+            const markupPercent = formData.markup || 25;
+            const markupAmount = subtotalBeforeMarkup * (markupPercent / 100);
+            
+            // Calculate subtotal after markup
+            const subtotal = subtotalBeforeMarkup + markupAmount;
+            
+            // Calculate sales tax
+            const taxRate = stateTaxRates[formData.state] || 0.04;
+            const salesTax = subtotal * taxRate;
+            
+            // Calculate total
             const total = subtotal + salesTax;
             
             return {
                 quoteId,
-                materials,
-                labor,
+                materials: materialsCost,
+                labor: laborCost,
                 conduitCost,
                 panelUpgradeCost,
-                nemaOutletCost,
                 permitCost,
+                markupAmount,
+                subtotalBeforeMarkup,
                 subtotal,
                 salesTax,
                 total,
-                formData
+                formData,
+                taxRate: (taxRate * 100).toFixed(2),
+                markupPercent
             };
         }
 
@@ -637,13 +752,23 @@
             try {
                 const quoteData = {
                     projectId: currentProject.id,
-                    availableSlots: parseInt(document.getElementById('availableSlots').value),
+                    // Property Information
+                    projectType: document.getElementById('projectType').value,
+                    state: document.getElementById('state').value,
+                    installComplexity: document.getElementById('installComplexity').value,
+                    installLocation: document.getElementById('installLocation').value,
+                    // Electrical Panel Assessment
+                    panelType: document.getElementById('panelType').value,
                     panelAge: parseInt(document.getElementById('panelAge').value),
                     panelCapacity: parseInt(document.getElementById('panelCapacity').value),
-                    chargerType: document.getElementById('chargerType').value,
+                    availableSlots: parseInt(document.getElementById('availableSlots').value),
+                    // Installation Conditions
                     conduitType: document.getElementById('conduitType').value,
-                    conduitFootage: parseInt(document.getElementById('conduitFootage').value),
-                    permitRequired: document.getElementById('permitRequired').checked
+                    conduitDistance: parseInt(document.getElementById('conduitDistance').value),
+                    permitRequired: document.getElementById('permitRequired').checked,
+                    // Business Settings
+                    chargerType: document.getElementById('chargerType').value,
+                    markup: parseInt(document.getElementById('markup').value)
                 };
 
                 // First, get or create quote ID
@@ -736,28 +861,68 @@
 
         function generateLineItems(quote) {
             let html = '';
-            const items = [
-                { label: 'Materials', amount: quote.materials },
-                { label: 'Labor', amount: quote.labor },
-                { label: 'Conduit', amount: quote.conduitCost }
-            ];
-
-            if (quote.panelUpgradeCost > 0) {
-                items.push({ label: 'Panel Upgrade', amount: quote.panelUpgradeCost });
-            }
-
-            if (quote.permitCost > 0) {
-                items.push({ label: 'Permit Fee', amount: quote.permitCost });
-            }
-
-            items.forEach(item => {
+            
+            // Base costs
+            html += `
+                <div class="line-item">
+                    <span>Materials & Equipment</span>
+                    <span>${formatCurrency(quote.materials)}</span>
+                </div>
+                <div class="line-item">
+                    <span>Labor</span>
+                    <span>${formatCurrency(quote.labor)}</span>
+                </div>
+            `;
+            
+            // Conduit (only show if there's a cost)
+            if (quote.conduitCost > 0) {
                 html += `
                     <div class="line-item">
-                        <span>${item.label}</span>
-                        <span>${formatCurrency(item.amount)}</span>
+                        <span>Conduit Installation</span>
+                        <span>${formatCurrency(quote.conduitCost)}</span>
                     </div>
                 `;
-            });
+            }
+            
+            // Panel upgrade (only if needed)
+            if (quote.panelUpgradeCost > 0) {
+                html += `
+                    <div class="line-item">
+                        <span>Panel Upgrade</span>
+                        <span>${formatCurrency(quote.panelUpgradeCost)}</span>
+                    </div>
+                `;
+            }
+            
+            // Permit (only if required)
+            if (quote.permitCost > 0) {
+                html += `
+                    <div class="line-item">
+                        <span>Permit Fee</span>
+                        <span>${formatCurrency(quote.permitCost)}</span>
+                    </div>
+                `;
+            }
+            
+            // Show subtotal before markup
+            if (quote.subtotalBeforeMarkup) {
+                html += `
+                    <div class="line-item" style="font-weight: 600; border-top: 1px solid #e5e7eb; margin-top: 10px; padding-top: 10px;">
+                        <span>Subtotal</span>
+                        <span>${formatCurrency(quote.subtotalBeforeMarkup)}</span>
+                    </div>
+                `;
+            }
+            
+            // Markup
+            if (quote.markupAmount && quote.markupAmount > 0) {
+                html += `
+                    <div class="line-item">
+                        <span>Business Markup (${quote.markupPercent}%)</span>
+                        <span>${formatCurrency(quote.markupAmount)}</span>
+                    </div>
+                `;
+            }
 
             return html;
         }
