@@ -21,7 +21,7 @@ export default async function handler(req, res) {
         }
         
         const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
-        const BASE_ID = proces.env.BASE_ID;
+        const BASE_ID = process.env.BASE_ID;
         
         const response = await fetch(
             `https://api.airtable.com/v0/${BASE_ID}/Projects/${projectId}`,
