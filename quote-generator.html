@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EV Charger Quote Generator</title>
+    <title>⚡Bolt Quotes - Quote Generator</title>
     
     <!-- External Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
@@ -630,34 +630,53 @@
             }
 
             console.log('Displaying photos:', photos);
+            
+            // Log first photo's complete structure to debug
+            if (photos.length > 0) {
+                console.log('FIRST PHOTO COMPLETE STRUCTURE:', JSON.stringify(photos[0], null, 2));
+                console.log('FIRST PHOTO FIELDS:', photos[0].fields);
+            }
 
-            const photoHTML = photos.map(photo => {
-                // Try different possible field names for the attachment
-                const photoFile = photo.fields.File?.[0] || 
-                                 photo.fields.Photo?.[0] || 
-                                 photo.fields.Attachment?.[0] ||
-                                 photo.fields.Image?.[0];
+            const photoHTML = photos.map((photo, index) => {
+                // Photos are hosted on IMGBB, displayed in "Photos" attachment field
+                // Try attachment field first (Photos column in Airtable)
+                const photoAttachment = photo.fields.Photos?.[0];
+                
+                // If it's an attachment with URL, use that
+                // Otherwise fall back to text URL fields
+                const photoUrl = photoAttachment?.url ||
+                                photo.fields.URL || 
+                                photo.fields.url ||
+                                photo.fields['Image URL'] ||
+                                photo.fields['Photo URL'] ||
+                                photo.fields.Link ||
+                                photo.fields.link ||
+                                photo.fields['IMGBB URL'] ||
+                                photo.fields.Image ||
+                                photo.fields.Photo;
                 
                 const photoType = photo.fields['Photo Type'] || 
                                  photo.fields.Type || 
                                  photo.fields['Image Type'] ||
                                  'Photo';
                 
-                console.log('Photo data:', {
-                    photoType,
-                    hasFile: !!photoFile,
-                    fields: Object.keys(photo.fields),
-                    photoFile
+                console.log(`Photo ${index + 1} (${photoType}):`, {
+                    hasPhotosField: !!photo.fields.Photos,
+                    hasAttachment: !!photoAttachment,
+                    hasUrl: !!photoUrl,
+                    url: photoUrl,
+                    attachment: photoAttachment,
+                    allFields: Object.keys(photo.fields)
                 });
                 
-                if (!photoFile || !photoFile.url) {
-                    console.warn('Photo has no file attachment:', photo.fields);
+                if (!photoUrl) {
+                    console.warn(`Photo ${index + 1} has no URL:`, photo.fields);
                     return '';
                 }
                 
                 return `
                     <div class="photo-item">
-                        <img src="${photoFile.url}" alt="${photoType}" loading="lazy" onerror="console.error('Failed to load image:', '${photoFile.url}')">
+                        <img src="${photoUrl}" alt="${photoType}" loading="lazy" onerror="console.error('Failed to load IMGBB image:', '${photoUrl}')">
                         <div class="photo-label">${photoType}</div>
                     </div>
                 `;
@@ -1014,7 +1033,7 @@
             // Add troubleshooting steps
             const steps = [];
             if (message.includes('INVALID_PERMISSIONS') || message.includes('authentication')) {
-                steps.push('Check: AIRTABLE_API_KEY is set correctly in Vercel environment variables');
+                steps.push('Check: AIRTABLE_TOKEN is set correctly in Vercel environment variables');
                 steps.push('Check: API token has permission to access this base');
                 steps.push('Check: Base ID is correct (should start with "app")');
                 steps.push('Check: Table names match exactly (PROJECTS, PHOTOS, QUOTES, etc.)');
