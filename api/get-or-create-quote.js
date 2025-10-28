@@ -63,7 +63,7 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 fields: {
-                    'Project': [projectId]
+                    'Project ID': [projectId]
                 }
             })
         });
