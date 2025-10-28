@@ -495,12 +495,7 @@
         let currentQuote = null;
         let companyConfig = null;
 
-        // Load projects on page load
-        window.addEventListener('DOMContentLoaded', () => {
-            loadProjects();
-        });
-
-        // Load projects and company config on page load
+       // Load projects and company config on page load
         window.addEventListener('DOMContentLoaded', () => {
             loadCompanyConfig();
             loadProjects();
