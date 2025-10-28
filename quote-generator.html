@@ -412,9 +412,9 @@
 
             <div class="form-group">
                 <label for="permitcost">Permit Cost (if required):</label>
-                <input type="number" id="permitCost" placeholder="$0.00" min="$0.00"
-                step="1">
-                <small>leave blank if unsure - you'll be primpted when generating the quote.</small>
+                <input type="number" id="permitCost" placeholder="$0.00" min="$0.00" step="1">
+                <small style="display: block; margin-tip: 5px; color: #6b7280; font-size: 12px;">
+                Leave blank if unsure - you'll be prompted when generating the quote. Verify with your local city/county building department.</small>
             </div>
 
             <!-- Business Settings -->
@@ -760,8 +760,7 @@
             const BASE_LABOR_HOURS = 4;
             const CONDUIT_COST_PER_FOOT = 12;
             const INCLUDED_CONDUIT_FOOTAGE = 20;
-            const PERMIT_COST = 150;
-            
+                        
             // State tax rates (state only, not including local) - All 50 states
             const stateTaxRates = {
                 'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725,
@@ -829,7 +828,7 @@
             
             const subtotalBeforeMarkup = finalMaterialsCost + finalLaborCost + conduitCost + finalPanelUpgradeCost + finalPermitCost;
             
-            // Permit cost
+            // Permit cost (from manual input)
             const permitCost = formData.permitCost || 0;
             
             // Calculate subtotal before markup
@@ -874,6 +873,33 @@
                 return;
             }
 
+            // Check permit cost - if empty or 0, ask the contractor
+            const permitCostInput = document.getElementById('permitCost');
+            const permitCostValue = parseInt(permitCostInput.value) || 0;
+            
+            if (permitCostValue === 0 && !permitCostInput.value) {
+                const hasPermitFee = confirm(
+                    "Permit Cost Not Entered\n\n" +
+                    "Is there a permit fee for this project?\n\n" +
+                    "Click OK if YES (you'll enter the amount)\n" +
+                    "Click Cancel if NO (no permit required)"
+                );
+                
+                if (hasPermitFee) {
+                    // They need to enter a permit cost - scroll to the field and focus
+                    permitCostInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    permitCostInput.focus();
+                    permitCostInput.style.border = '2px solid #ef4444';
+                    setTimeout(() => {
+                        permitCostInput.style.border = '';
+                    }, 2000);
+                    return;
+                } else {
+                    // No permit required - set to 0 explicitly
+                    permitCostInput.value = '0';
+                }
+            }
+            
             const generateBtn = document.querySelector('#assessmentForm .button');
             const generateBtnText = document.getElementById('generateBtnText');
             generateBtn.disabled = true;
@@ -896,6 +922,8 @@
                     conduitType: document.getElementById('conduitType').value,
                     conduitDistance: parseInt(document.getElementById('conduitDistance').value),
                     permitRequired: document.getElementById('permitRequired').checked,
+                    permitCost:
+                    parseInt(document.getElementById('permitCost').vlue) || 0,
                     // Business Settings
                     chargerType: document.getElementById('chargerType').value,
                     markup: parseInt(document.getElementById('markup').value)
