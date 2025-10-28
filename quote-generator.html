@@ -438,6 +438,33 @@
                 </select>
             </div>
 
+            <!-- Manual Price Overrides (Optional) -->
+            <h3 style="color: #1e3a8a; font-size: 16px; margin-top: 30px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb;">Manual Price Adjustments (Optional)</h3>
+            
+            <p style="color: #6b7280; font-size: 13px; margin-bottom: 15px;">
+                Leave blank to use calculated values. Enter custom amounts to override.
+            </p>
+
+            <div class="form-group">
+                <label for="overrideMaterials">Override Materials Cost ($):</label>
+                <input type="number" id="overrideMaterials" placeholder="Auto-calculated" step="0.01" min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="overrideLabor">Override Labor Cost ($):</label>
+                <input type="number" id="overrideLabor" placeholder="Auto-calculated" step="0.01" min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="overridePermit">Override Permit Cost ($):</label>
+                <input type="number" id="overridePermit" placeholder="Auto-calculated" step="0.01" min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="overridePanelUpgrade">Override Panel Upgrade Cost ($):</label>
+                <input type="number" id="overridePanelUpgrade" placeholder="Auto-calculated" step="0.01" min="0">
+            </div>
+            
             <button class="button" onclick="generateQuote()" style="margin-top: 20px;">
                 <span id="generateBtnText">Generate Quote</span>
             </button>
@@ -742,8 +769,24 @@
             if (formData.conduitType === 'underground') laborHours += 2;
             if (formData.conduitType === 'concealed') laborHours += 1;
             if (totalFootage > 50) laborHours += 1;
+            if (panelUpgradeCost > 0) laborHours += 8;
+            const laborCost = laborHours * LABOR_RATE;
             
-            const laborCost = LABOR_RATE * laborHours;
+            const permitCost = formData.permitRequired ? PERMIT_COST : 0;
+            
+            // ✅ NEW: Check for manual overrides
+            const overrideMaterials = parseFloat(document.getElementById('overrideMaterials').value);
+            const overrideLabor = parseFloat(document.getElementById('overrideLabor').value);
+            const overridePermit = parseFloat(document.getElementById('overridePermit').value);
+            const overridePanelUpgrade = parseFloat(document.getElementById('overridePanelUpgrade').value);
+            
+            // ✅ NEW: Use overrides if provided, otherwise use calculated values
+            const finalMaterialsCost = overrideMaterials > 0 ? overrideMaterials : materialsCost;
+            const finalLaborCost = overrideLabor > 0 ? overrideLabor : laborCost;
+            const finalPermitCost = overridePermit >= 0 ? overridePermit : permitCost;
+            const finalPanelUpgradeCost = overridePanelUpgrade >= 0 ? overridePanelUpgrade : panelUpgradeCost;
+            
+            const subtotalBeforeMarkup = finalMaterialsCost + finalLaborCost + conduitCost + finalPanelUpgradeCost + finalPermitCost;
             
             // Permit cost
             const permitCost = formData.permitRequired ? PERMIT_COST : 0;
@@ -767,11 +810,12 @@
             
             return {
                 quoteId,
-                materials: materialsCost,
-                labor: laborCost,
-                conduitCost,
+                materials: finalMaterialsCost,
+                labor: finalLaborCost,
+                laborHours:,
+                conduit: conduitCost,
                 panelUpgradeCost,
-                permitCost,
+                permit: finalPanelUpgradeCost,
                 markupAmount,
                 subtotalBeforeMarkup,
                 subtotal,
