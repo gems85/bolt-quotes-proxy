@@ -492,12 +492,53 @@
         let currentProjectDetails = null;
         let currentPhotos = [];
         let currentQuote = null;
+        let companyConfig = null;
 
         // Load projects on page load
         window.addEventListener('DOMContentLoaded', () => {
             loadProjects();
         });
 
+        // Load projects and company config on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCompanyConfig();
+            loadProjects();
+        });
+
+        async function loadCompanyConfig() {
+            try {
+                const response = await fetch('/api/get-company-config');
+                const data = await response.json();
+                
+                if (data.success) {
+                    companyConfig = data.data;
+                    console.log('Company config loaded:', companyConfig);
+                } else {
+                    console.warn('Failed to load company config, using defaults');
+                    companyConfig = {
+                        companyName: 'EV Charger Installation',
+                        logo: '',
+                        address: '',
+                        phone: '',
+                        email: '',
+                        licenseNumber: '',
+                        website: ''
+                    };
+                }
+            } catch (error) {
+                console.error('Error loading company config:', error);
+                companyConfig = {
+                    companyName: 'EV Charger Installation',
+                    logo: '',
+                    address: '',
+                    phone: '',
+                    email: '',
+                    licenseNumber: '',
+                    website: ''
+                };
+            }
+        }
+        
         async function loadProjects() {
             const refreshIcon = document.getElementById('refreshIcon');
             refreshIcon.style.animation = 'spin 0.6s linear infinite';
@@ -725,14 +766,18 @@
             const INCLUDED_CONDUIT_FOOTAGE = 20;
             const PERMIT_COST = 150;
             
-            // State tax rates
+            // State tax rates (state only, not including local) - All 50 states
             const stateTaxRates = {
-                'GA': 0.04,
-                'FL': 0.06,
-                'AL': 0.04,
-                'SC': 0.06,
-                'NC': 0.0475,
-                'TN': 0.07
+                'AL': 0.04, 'AK': 0.00, 'AZ': 0.056, 'AR': 0.065, 'CA': 0.0725,
+                'CO': 0.029, 'CT': 0.0635, 'DE': 0.00, 'FL': 0.06, 'GA': 0.04,
+                'HI': 0.04, 'ID': 0.06, 'IL': 0.0625, 'IN': 0.07, 'IA': 0.06,
+                'KS': 0.065, 'KY': 0.06, 'LA': 0.0445, 'ME': 0.055, 'MD': 0.06,
+                'MA': 0.0625, 'MI': 0.06, 'MN': 0.06875, 'MS': 0.07, 'MO': 0.04225,
+                'MT': 0.00, 'NE': 0.055, 'NV': 0.0685, 'NH': 0.00, 'NJ': 0.06625,
+                'NM': 0.05125, 'NY': 0.04, 'NC': 0.0475, 'ND': 0.05, 'OH': 0.0575,
+                'OK': 0.045, 'OR': 0.00, 'PA': 0.06, 'RI': 0.07, 'SC': 0.06,
+                'SD': 0.045, 'TN': 0.07, 'TX': 0.0625, 'UT': 0.061, 'VT': 0.06,
+                'VA': 0.053, 'WA': 0.065, 'WV': 0.06, 'WI': 0.05, 'WY': 0.04
             };
             
             // Conduit multipliers
@@ -911,11 +956,33 @@
             const customerEmail = currentProject.fields['Customer Email'] || '';
             const customerPhone = currentProject.fields['Customer Phone'] || '';
 
+            // Get company info
+            const company = companyConfig || {
+                companyName: 'EV Charger Installation',
+                logo: '',
+                address: '',
+                phone: '',
+                email: '',
+                licenseNumber: '',
+                website: ''
+            };
+            
             quoteContent.innerHTML = `
                 <div class="quote-header">
-                    <h1 class="quote-title">Installation Quote</h1>
-                    <p>Quote ID: ${quote.quoteId}</p>
-                    <p>Date: ${new Date().toLocaleDateString()}</p>
+                    ${company.logo ? `<img src="${company.logo}" alt="${company.companyName}" style="max-height: 80px; margin-bottom: 15px;">` : ''}
+                    <h1 class="quote-title">${company.companyName}</h1>
+                    ${company.address ? `<p style="margin: 5px 0; color: #6b7280;">${company.address}</p>` : ''}
+                    <div style="margin: 10px 0;">
+                        ${company.phone ? `<span style="margin-right: 15px;">📞 ${company.phone}</span>` : ''}
+                        ${company.email ? `<span style="margin-right: 15px;">✉️ ${company.email}</span>` : ''}
+                        ${company.website ? `<span>🌐 ${company.website}</span>` : ''}
+                    </div>
+                    ${company.licenseNumber ? `<p style="font-size: 12px; color: #6b7280;">License #: ${company.licenseNumber}</p>` : ''}
+                    <hr style="margin: 20px 0; border: none; border-top: 2px solid #e5e7eb;">
+                    <h2 style="color: #1e3a8a; margin: 15px 0;">Installation Quote</h2>
+                    <p><strong>Quote ID:</strong> ${quote.quoteId}</p>
+                    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p><strong>Valid Until:</strong> ${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString()}</p>
                 </div>
 
                 <div class="quote-section">
@@ -1023,6 +1090,74 @@
             }).format(amount);
         }
 
+                async function saveQuoteToAirtable(quote) {
+            try {
+                const quoteData = {
+                    quoteId: quote.quoteId,
+                    customerName: currentProject.fields['Customer Name'],
+                    chargerType: quote.formData.chargerType,
+                    panelCapacity: quote.formData.panelCapacity,
+                    availableSlots: quote.formData.availableSlots,
+                    distance: quote.formData.conduitDistance,
+                    conduitType: quote.formData.conduitType,
+                    materials: quote.materials,
+                    labor: quote.labor,
+                    laborHours: Math.round(quote.labor / 95), // Assuming $95/hr labor rate
+                    permit: quote.permitCost,
+                    subtotal: quote.subtotalBeforeMarkup,
+                    markup: quote.markupPercent,
+                    markupAmount: quote.markupAmount,
+                    total: quote.total,
+                    panelUpgrade: quote.panelUpgradeCost,
+                    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    dateIssued: new Date().toISOString().split('T')[0]
+                };
+
+                const response = await fetch('/api/save-quote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(quoteData)
+                });
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    console.warn('Failed to save quote to Airtable:', data.message);
+                } else {
+                    console.log('Quote saved to Airtable successfully');
+                }
+            } catch (error) {
+                console.warn('Error saving quote to Airtable:', error);
+            }
+        }
+
+        async function uploadPDFToAirtable(pdfData) {
+            try {
+                const response = await fetch('/api/upload-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        pdfData: pdfData,
+                        quoteId: currentQuote.quoteId,
+                        projectId: currentProject.id
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('PDF uploaded to IMGBB and saved to Airtable:', data.pdfUrl);
+                    return data.pdfUrl;
+                } else {
+                    console.warn('Failed to upload PDF:', data.message);
+                    return null;
+                }
+            } catch (error) {
+                console.warn('Error uploading PDF:', error);
+                return null;
+            }
+        }
+
         async function downloadPDF() {
             const pdfBtn = document.querySelector('#quotePreview .button');
             const pdfBtnText = document.getElementById('pdfBtnText');
@@ -1051,9 +1186,22 @@
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                 pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                
+                // Get PDF as base64
+                const pdfData = pdf.output('dataurlstring');
+                
+                // Download locally
                 pdf.save(`Quote-${currentQuote.quoteId}.pdf`);
 
-                showSuccess('PDF downloaded successfully!');
+                pdfBtnText.innerHTML = '<span class="loading"></span>Uploading to Airtable...';
+
+                // Upload to IMGBB and save to Airtable
+                await uploadPDFToAirtable(pdfData);
+                
+                // Save quote details to Airtable
+                await saveQuoteToAirtable(currentQuote);
+
+                showSuccess('PDF downloaded and saved to Airtable successfully!');
 
             } catch (error) {
                 console.error('Error generating PDF:', error);
@@ -1073,6 +1221,7 @@
 
             errorTitle.textContent = 'Airtable Configuration Error';
             errorMessage.textContent = message;
+
 
             // Add troubleshooting steps
             const steps = [];
