@@ -496,7 +496,7 @@
                 projects.forEach(project => {
                     const option = document.createElement('option');
                     option.value = project.id;
-                    option.textContent = `${project.fields['Customer Name']} - ${project.fields['Customer Address']}`;
+                    option.textContent = `${project.fields['Customer Name']} - ${project.fields['Property Address']}`;
                     option.dataset.project = JSON.stringify(project);
                     select.appendChild(option);
                 });
