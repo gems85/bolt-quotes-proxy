@@ -852,10 +852,10 @@
                 quoteId,
                 materials: finalMaterialsCost,
                 labor: finalLaborCost,
-                laborHours:,
-                conduit: conduitCost,
-                panelUpgradeCost,
-                permit: finalPanelUpgradeCost,
+                laborHours: Math.round(finalLaborCost / 95),
+                conduitCost: conduitCost,
+                panelUpgradeCost: finalPanelUpgradeCost,
+                permitCost: finalPermitCost,
                 markupAmount,
                 subtotalBeforeMarkup,
                 subtotal,
@@ -921,9 +921,8 @@
                     // Installation Conditions
                     conduitType: document.getElementById('conduitType').value,
                     conduitDistance: parseInt(document.getElementById('conduitDistance').value),
-                    permitRequired: document.getElementById('permitRequired').checked,
                     permitCost:
-                    parseInt(document.getElementById('permitCost').vlue) || 0,
+                    parseInt(document.getElementById('permitCost').value) || 0,
                     // Business Settings
                     chargerType: document.getElementById('chargerType').value,
                     markup: parseInt(document.getElementById('markup').value)
