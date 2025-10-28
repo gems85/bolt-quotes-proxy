@@ -411,9 +411,10 @@
             </div>
 
             <div class="form-group">
-                <label>
-                    <input type="checkbox" id="permitRequired"> Permit Required
-                </label>
+                <label for="permitcost">Permit Cost (if required):</label>
+                <input type="number" id="permitCost" placeholder="$0.00" min="$0.00"
+                step="1">
+                <small>leave blank if unsure - you'll be primpted when generating the quote.</small>
             </div>
 
             <!-- Business Settings -->
@@ -817,7 +818,7 @@
             if (panelUpgradeCost > 0) laborHours += 8;
             const laborCost = laborHours * LABOR_RATE;
             
-            const permitCost = formData.permitRequired ? PERMIT_COST : 0;
+            const permitCost = formData.permitCost || 0;
             
             // ✅ NEW: Check for manual overrides
             const overrideMaterials = parseFloat(document.getElementById('overrideMaterials').value);
@@ -834,7 +835,7 @@
             const subtotalBeforeMarkup = finalMaterialsCost + finalLaborCost + conduitCost + finalPanelUpgradeCost + finalPermitCost;
             
             // Permit cost
-            const permitCost = formData.permitRequired ? PERMIT_COST : 0;
+            const permitCost = formData.permitCost || 0;
             
             // Calculate subtotal before markup
             const subtotalBeforeMarkup = materialsCost + laborCost + conduitCost + panelUpgradeCost + permitCost;
