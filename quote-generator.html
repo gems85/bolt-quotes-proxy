@@ -607,7 +607,7 @@
                     </div>
                     <div>
                         <p style="font-weight: 600; color: #6b7280; font-size: 12px;">Address</p>
-                        <p style="color: #1f2937;">${fields['Customer Address'] || 'N/A'}</p>
+                        <p style="color: #1f2937;">${fields['Property Address'] || 'N/A'}</p>
                     </div>
                     <div>
                         <p style="font-weight: 600; color: #6b7280; font-size: 12px;">EV Vehicle</p>
@@ -863,7 +863,7 @@
         function displayQuote(quote) {
             const quoteContent = document.getElementById('quoteContent');
             const customerName = currentProject.fields['Customer Name'] || 'Customer';
-            const customerAddress = currentProject.fields['Customer Address'] || '';
+            const propertyAddress = currentProject.fields['Property Address'] || '';
             const customerEmail = currentProject.fields['Customer Email'] || '';
             const customerPhone = currentProject.fields['Customer Phone'] || '';
 
@@ -877,7 +877,7 @@
                 <div class="quote-section">
                     <h3>Customer Information</h3>
                     <p><strong>Name:</strong> ${customerName}</p>
-                    <p><strong>Address:</strong> ${customerAddress}</p>
+                    <p><strong>Address:</strong> ${propertyAddress}</p>
                     <p><strong>Email:</strong> ${customerEmail}</p>
                     <p><strong>Phone:</strong> ${customerPhone}</p>
                 </div>
