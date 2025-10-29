@@ -154,7 +154,7 @@ export default async function handler(req, res) {
         // Create photo record in Airtable
         const airtableData = {
             fields: {
-                'Project': [projectId],
+                'Project ID': [projectId],
                 'Photo Type': photoType,
                 'Uploaded By': 'Homeowner',
                 'Photos': [{ url: imageUrl }]
