@@ -47,16 +47,13 @@ export default async function handler(req, res) {
         }
         
         const searchData = await searchResponse.json();
-        
-        if (!searchData.records || searchData.records.length === 0) {
-            throw new Error(`Quote ${quoteData.quoteId} not found in Airtable`);
-        }
-        
-        const recordId = searchData.records[0].id;
-        
-        // Prepare fields to update
+             
+        // Prepare fields
         const fields = {
+            'Quote ID': quoteData.quoteId,
+            'Project ID': quoteData.projectId,
             'Customer Name': quoteData.customerName,
+            'Customer Email': quoteData.customerEmail || '',
             'Charger Type': quoteData.chargerType,
             'Panel Capacity (Amps)': quoteData.panelCapacity,
             'Available Breaker Slots': quoteData.availableSlots,
@@ -74,32 +71,61 @@ export default async function handler(req, res) {
             'Total Amount': quoteData.total,
             'Panel Upgrade Required': quoteData.panelUpgrade > 0,
             'Valid Until': quoteData.validUntil,
-            'Date Issued': quoteData.dateIssued
+            'Date Issued': quoteData.dateIssued,
+            'Version': quoteData.version || 1,
+            'Quote Data': JSON.stringify(quoteData)
         };
         
-        // Update the quote record
-        const updateResponse = await fetch(
-            `https://api.airtable.com/v0/${BASE_ID}/${QUOTES_TABLE}/${recordId}`,
-            {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ fields })
+         let savedRecord;
+        
+        // If quote exists, update it; otherwise create new
+        if (searchData.records && searchData.records.length > 0) {
+            const recordId = searchData.records[0].id;
+            
+            // Update existing record
+            const updateResponse = await fetch(
+                `https://api.airtable.com/v0/${BASE_ID}/${QUOTES_TABLE}/${recordId}`,
+                {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ fields })
+                }
+            );
+            
+            if (!updateResponse.ok) {
+                const error = await updateResponse.json();
+                throw new Error(`Failed to update Airtable: ${error.error?.message || 'Unknown error'}`);
             }
-        );
-        
-        if (!updateResponse.ok) {
-            const error = await updateResponse.json();
-            throw new Error(`Failed to update Airtable: ${error.error?.message || 'Unknown error'}`);
+
+             savedRecord = await updateResponse.json();
+        } else {
+            // Create new record
+            const createResponse = await fetch(
+                `https://api.airtable.com/v0/${BASE_ID}/${QUOTES_TABLE}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ fields })
+                }
+            );
+            
+            if (!createResponse.ok) {
+                const error = await createResponse.json();
+                throw new Error(`Failed to create quote in Airtable: ${error.error?.message || 'Unknown error'}`);
+            }
+            
+            savedRecord = await createResponse.json();
         }
-        
-        const updatedRecord = await updateResponse.json();
-        
+               
         res.status(200).json({
             success: true,
-            data: updatedRecord,
+            data: saveRecord,
             message: 'Quote saved successfully'
         });
         
