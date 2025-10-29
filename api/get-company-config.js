@@ -56,7 +56,42 @@ export default async function handler(req, res) {
         }
         
         const config = data.records[0].fields;
+
+        // Parse JSON fields
+        let rebates = [];
+        let financingPlans = [];
+        let whatsIncluded = [];
         
+        try {
+            if (config['Rebates']) {
+                rebates = typeof config['Rebates'] === 'string' 
+                    ? JSON.parse(config['Rebates']) 
+                    : config['Rebates'];
+            }
+        } catch (e) {
+            console.error('Error parsing Rebates:', e);
+        }
+        
+        try {
+            if (config['Financing Plans']) {
+                financingPlans = typeof config['Financing Plans'] === 'string'
+                    ? JSON.parse(config['Financing Plans'])
+                    : config['Financing Plans'];
+            }
+        } catch (e) {
+            console.error('Error parsing Financing Plans:', e);
+        }
+        
+        try {
+            if (config['Optional Addons']) {
+                whatsIncluded = typeof config['Optional Addons'] === 'string'
+                    ? JSON.parse(config['Optional Addons'])
+                    : config['Optional Addons'];
+            }
+        } catch (e) {
+            console.error('Error parsing Optional Addons:', e);
+        }
+                
         res.status(200).json({
             success: true,
             data: {
@@ -66,7 +101,10 @@ export default async function handler(req, res) {
                 phone: config['Phone'] || '',
                 email: config['Email'] || '',
                 licenseNumber: config['License Number'] || '',
-                website: config['Website'] || ''
+                website: config['Website'] || '',
+                rebates: rebates,
+                financingPlans: financingPlans,
+                whatsIncluded: whatsIncluded
             }
         });
         
