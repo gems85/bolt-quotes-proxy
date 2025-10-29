@@ -828,12 +828,6 @@
             
             const subtotalBeforeMarkup = finalMaterialsCost + finalLaborCost + conduitCost + finalPanelUpgradeCost + finalPermitCost;
             
-            // Permit cost (from manual input)
-            const permitCost = formData.permitCost || 0;
-            
-            // Calculate subtotal before markup
-            const subtotalBeforeMarkup = materialsCost + laborCost + conduitCost + panelUpgradeCost + permitCost;
-            
             // Apply markup
             const markupPercent = formData.markup || 25;
             const markupAmount = subtotalBeforeMarkup * (markupPercent / 100);
