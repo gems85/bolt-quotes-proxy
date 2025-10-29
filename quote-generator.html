@@ -1357,7 +1357,10 @@
             try {
                 const quoteData = {
                     quoteId: quote.quoteId,
+                    projectId: currentProject.id,
+                    version: quote.version || 1,
                     customerName: currentProject.fields['Customer Name'],
+                    customerEmail: currentProject.fields['Customer Email'] || '',
                     chargerType: quote.formData.chargerType,
                     panelCapacity: quote.formData.panelCapacity,
                     availableSlots: quote.formData.availableSlots,
