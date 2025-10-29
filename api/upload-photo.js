@@ -9,7 +9,7 @@ export const config = {
 };
 
 // Get environment variables at module level
-const AIRTABLE_PAT = process.env.AIRTABLE_PAT;
+const AIRTABLE_TOKEN = process.env.AIRTABLE_PAT;
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
 const BASE_ID = process.env.BASE_ID;
 const PHOTOS_TABLE = 'process.env.PHOTOS_TABLE';
@@ -69,7 +69,7 @@ export default async function handler(req, res) {
     console.log('Content-Type:', req.headers['content-type']);
     console.log('Content-Length:', req.headers['content-length']);
 
-    if (!AIRTABLE_PAT || !IMGBB_API_KEY) {
+    if (!AIRTABLE_TOKEN || !IMGBB_API_KEY) {
         console.error('Missing environment variables');
         return res.status(500).json({ error: 'Server configuration error' });
     }
