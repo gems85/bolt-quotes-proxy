@@ -591,7 +591,7 @@
             hideError();
 
             try {
-                const response = await fetch('/api/get-projects');
+                const response = await fetch('/api/get-project-operations');
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -652,7 +652,7 @@
 
         async function loadProjectDetails(projectId) {
             try {
-                const response = await fetch(`/api/get-project?projectId=${projectId}`);
+                const response = await fetch(`/api/get-project-operations?projectId=${projectId}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -1016,7 +1016,7 @@
 
         async function updateProjectStatus(projectId, status) {
             try {
-                const response = await fetch('/api/update-project-status', {
+                const response = await fetch('/api/update-project-operations', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ projectId, status })
