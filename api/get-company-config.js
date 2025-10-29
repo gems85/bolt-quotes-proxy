@@ -90,7 +90,7 @@ export default async function handler(req, res) {
                     : config["What's Included"];
             }
         } catch (e) {
-            console.error("Error parsing What's Included":', e);
+            console.error("Error parsing What's Included":, e);
         }
         
          try {
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
                     : config['Optional Addons'];
             }
         } catch (e) {
-            console.error('Error parsing Optional Addons:', e);
+            console.error("Error parsing Optional Addons:", e);
         }
         
         res.status(200).json({
