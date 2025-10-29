@@ -90,7 +90,7 @@ export default async function handler(req, res) {
                     : config["What's Included"];
             }
         } catch (e) {
-            console.error("Error parsing What's Included":, e);
+            console.error("Error parsing What's Included:", e);
         }
         
          try {
