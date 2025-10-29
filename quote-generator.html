@@ -882,9 +882,7 @@
             const overrideLabor = parseFloat(document.getElementById('overrideLabor').value);
             const overridePermit = parseFloat(document.getElementById('overridePermit').value);
             const overridePanelUpgrade = parseFloat(document.getElementById('overridePanelUpgrade').value);
-
-            const subtotalBeforeMarkup = finalMaterialsCost + finalLaborCost + conduitCost + finalPanelUpgradeCost + finalPermitCost + addonsTotal;
-                        
+                     
             // ✅ NEW: Use overrides if provided, otherwise use calculated values
             const finalMaterialsCost = overrideMaterials > 0 ? overrideMaterials : materialsCost;
             const finalLaborCost = overrideLabor > 0 ? overrideLabor : laborCost;
