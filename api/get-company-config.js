@@ -61,6 +61,7 @@ export default async function handler(req, res) {
         let rebates = [];
         let financingPlans = [];
         let whatsIncluded = [];
+        let optionalAddons = [];
         
         try {
             if (config['Rebates']) {
@@ -83,15 +84,25 @@ export default async function handler(req, res) {
         }
         
         try {
+            if (config["What's Included"]) {
+                whatsIncluded = typeof config["What's Included"] === 'string'
+                    ? JSON.parse(config["What's Included"])
+                    : config["What's Included"];
+            }
+        } catch (e) {
+            console.error("Error parsing What's Included":', e);
+        }
+        
+         try {
             if (config['Optional Addons']) {
-                whatsIncluded = typeof config['Optional Addons'] === 'string'
+                optionalAddons = typeof config['Optional Addons'] === 'string'
                     ? JSON.parse(config['Optional Addons'])
                     : config['Optional Addons'];
             }
         } catch (e) {
             console.error('Error parsing Optional Addons:', e);
         }
-                
+        
         res.status(200).json({
             success: true,
             data: {
@@ -104,7 +115,8 @@ export default async function handler(req, res) {
                 website: config['Website'] || '',
                 rebates: rebates,
                 financingPlans: financingPlans,
-                whatsIncluded: whatsIncluded
+                whatsIncluded: whatsIncluded,
+                optionalAddons: optionalAddons    
             }
         });
         
