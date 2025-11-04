@@ -1032,6 +1032,7 @@
         }
 
         function displayQuote(quote) {
+            console.log('📄 Displaying quote with selectedAddons:', quote.selectedAddons);
             const quoteContent = document.getElementById('quoteContent');
             const customerName = currentProject.fields['Customer Name'] || 'Customer';
             const propertyAddress = currentProject.fields['Property Address'] || '';
