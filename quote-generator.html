@@ -1440,7 +1440,11 @@
                 const canvas = await html2canvas(quoteContent, {
                     scale: 2,
                     useCORS: true,
-                    logging: false
+                    allowTaint: true,
+                    logging: true,
+                    backgroundColor: '#ffffff',
+                    imageTimeout: 0,
+                    removeContainer: true
                 });
 
                 const imgData = canvas.toDataURL('image/png');
