@@ -994,7 +994,9 @@
                 }
                 
                 // Generate quote locally (since Vercel doesn't have generate-quote endpoint yet)
-                const quote = generateQuoteLocally(quoteData, quoteIdData.quoteId);
+                const quote = generateQuoteLocally(quoteData, versionData.data.quoteId);
+                quote.version = versionData.data.version;
+                quote.isNewQuote = versionData.data.isNewQuote;
                 currentQuote = quote;
                 displayQuote(quote);
                 
