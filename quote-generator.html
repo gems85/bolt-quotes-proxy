@@ -1469,11 +1469,7 @@
                 const canvas = await html2canvas(quoteContent, {
                     scale: 2,
                     useCORS: true,
-                    allowTaint: true,
-                    logging: true,
-                    backgroundColor: '#ffffff',
-                    imageTimeout: 0,
-                    removeContainer: true
+                    logging: false,
                 });
 
                 console.log('Step 3: Converting to PDF...');
