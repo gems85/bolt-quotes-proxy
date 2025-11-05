@@ -997,7 +997,26 @@
                 const quote = generateQuoteLocally(quoteData, versionData.data.quoteId);
                 quote.version = versionData.data.version;
                 quote.isNewQuote = versionData.data.isNewQuote;
+                quote.projectId = currentProject.id;
+                quote.customerName = currentProject.fields['Customer Name'];
+                quote.customerEmail = currentProject.fields['Customer Email'] || '';
+                quote.chargerType = quoteData.chargerType;
+                quote.panelCapacity = quoteData.panelCapacity;
+                quote.availableSlots = quoteData.availableSlots;
+                quote.distance = quoteData.conduitDistance;
+                quote.conduitType = quoteData.conduitType;
+                quote.markup = quoteData.markup;
+                
+                // Calculate dates
+                const today = new Date();
+                const validUntil = new Date(today);
+                validUntil.setDate(validUntil.getDate() + 30);
+                quote.dateIssued = today.toISOString().split('T')[0];
+                quote.validUntil = validUntil.toISOString().split('T')[0];
+               
                 currentQuote = quote;
+                // ✅ Save quote to Airtable immediately (not just on PDF download)
+                await saveQuoteToAirtable(quote);
                 displayQuote(quote);
                 
                 // Update project status
