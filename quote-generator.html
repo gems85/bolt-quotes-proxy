@@ -991,13 +991,14 @@
                     markup: parseInt(document.getElementById('markup').value)
                 };
 
-                // First, get or create quote ID and version number
+                // First, get or create quote ID
                 const quoteIdResponse = await fetch(`/api/get-or-create-quote?projectId=${currentProject.id}`);
                 const quoteIdData = await quoteIdResponse.json();
                 
                 if (!quoteIdData.success) {
                     throw new Error(quoteIdData.error || 'Failed to get quote ID');
                 }
+                // Then, get/create version of quote ID (used when edits are made to the quote)
                 const versionResponse = await fetch('/api/get-quote-version', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1010,27 +1011,8 @@
                 // Generate quote locally (since Vercel doesn't have generate-quote endpoint yet)
                 const quote = generateQuoteLocally(quoteData, versionData.data.quoteId);
                 quote.version = versionData.data.version;
-                quote.isNewQuote = versionData.data.isNewQuote;
-                quote.projectId = currentProject.id;
-                quote.customerName = currentProject.fields['Customer Name'];
-                quote.customerEmail = currentProject.fields['Customer Email'] || '';
-                quote.chargerType = quoteData.chargerType;
-                quote.panelCapacity = quoteData.panelCapacity;
-                quote.availableSlots = quoteData.availableSlots;
-                quote.distance = quoteData.conduitDistance;
-                quote.conduitType = quoteData.conduitType;
-                quote.markup = quoteData.markup;
-                
-                // Calculate dates
-                const today = new Date();
-                const validUntil = new Date(today);
-                validUntil.setDate(validUntil.getDate() + 30);
-                quote.dateIssued = today.toISOString().split('T')[0];
-                quote.validUntil = validUntil.toISOString().split('T')[0];
-               
+                quote.isNewQuote = versionData.data.isNewQuote;                             
                 currentQuote = quote;
-                // ✅ Save quote to Airtable immediately (not just on PDF download)
-                await saveQuoteToAirtable(quote);
                 displayQuote(quote);
                 
                 // Update project status
@@ -1396,11 +1378,11 @@
                     version: quote.version || 1,
                     customerName: currentProject.fields['Customer Name'],
                     customerEmail: currentProject.fields['Customer Email'] || '',
-                    chargerType: quote.chargerType,
-                    panelCapacity: quote.panelCapacity,
-                    availableSlots: quote.availableSlots,
-                    distance: quote.distance,
-                    conduitType: quote.conduitType,
+                    chargerType: quote.formData.chargerType,
+                    panelCapacity: quote.formData.panelCapacity,
+                    availableSlots: quote.formData.availableSlots,
+                    distance: quote.formData.conduitDistance,
+                    conduitType: quote.formData.conduitType,
                     materials: quote.materials,
                     labor: quote.labor,
                     laborHours: Math.round(quote.labor / 95), // Assuming $95/hr labor rate
@@ -1410,8 +1392,8 @@
                     markupAmount: quote.markupAmount,
                     total: quote.total,
                     panelUpgrade: quote.panelUpgradeCost,
-                    validUntil: quote.validUntil,
-                    dateIssued: quote.dateIssued
+                    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    dateIssued: new Date().toISOString().split('T')[0]
                 };
 
                 const response = await fetch('/api/save-quote', {
@@ -1481,18 +1463,20 @@
                         }
                     }
                 });
-                console.log('Step 3: Capturing quote as image...');
+                console.log('Step 2: Capturing quote as image...');
 
                 // Capture the quote as image
                 const canvas = await html2canvas(quoteContent, {
                     scale: 2,
-                    useCORS: false,
-                    allowTaint: false,
-                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: true,
                     backgroundColor: '#ffffff',
                     imageTimeout: 0,
                     removeContainer: true
                 });
+
+                console.log('Step 3: Converting to PDF...');
 
                 // Restore hidden elements
                 hiddenElements.forEach(el => el.style.display = '');
