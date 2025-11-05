@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡Bolt Quotes - Quote Generator</title>
+    <title>Bolt Quotes - Quote Generator</title>
 
-     <!-- Favicon -->
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     
     <!-- External Libraries -->
@@ -1388,22 +1388,22 @@
                     version: quote.version || 1,
                     customerName: currentProject.fields['Customer Name'],
                     customerEmail: currentProject.fields['Customer Email'] || '',
-                    chargerType: quote.formData.chargerType,
-                    panelCapacity: quote.formData.panelCapacity,
-                    availableSlots: quote.formData.availableSlots,
-                    distance: quote.formData.conduitDistance,
-                    conduitType: quote.formData.conduitType,
+                    chargerType: quote.chargerType,
+                    panelCapacity: quote.panelCapacity,
+                    availableSlots: quote.availableSlots,
+                    distance: quote.distance,
+                    conduitType: quote.conduitType,
                     materials: quote.materials,
                     labor: quote.labor,
                     laborHours: Math.round(quote.labor / 95), // Assuming $95/hr labor rate
                     permit: quote.permitCost,
                     subtotal: quote.subtotalBeforeMarkup,
-                    markup: quote.markupPercent,
+                    markup: quote.markupPercent || quote.markup,
                     markupAmount: quote.markupAmount,
                     total: quote.total,
                     panelUpgrade: quote.panelUpgradeCost,
-                    validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    dateIssued: new Date().toISOString().split('T')[0]
+                    validUntil: quote.validUntil,
+                    dateIssued: quote.dateIssued
                 };
 
                 const response = await fetch('/api/save-quote', {
@@ -1460,6 +1460,20 @@
             try {
                 const { jsPDF } = window.jspdf;
                 const quoteContent = document.getElementById('quoteContent');
+                console.log('Step 2: Hiding external images to avoid CORS issues...');
+                // Temporarily hide elements with external images that cause CORS issues
+                const photosInQuote = quoteContent.querySelectorAll('img');
+                const hiddenElements = [];
+                photosInQuote.forEach(img => {
+                    if (img.src.includes('airtable')) {
+                        const parent = img.closest('.quote-section');
+                        if (parent && parent.querySelector('h3')?.textContent === 'Installation Photos') {
+                            parent.style.display = 'none';
+                            hiddenElements.push(parent);
+                        }
+                    }
+                });
+                console.log('Step 3: Capturing quote as image...');
 
                 // Capture the quote as image
                 const canvas = await html2canvas(quoteContent, {
