@@ -1003,6 +1003,8 @@
                 const versionData = await versionResponse.json();
                 
                 if (!versionData.success) {
+                    throw new Error(versionData.error || 'Failed ot get quote version');
+                }    
                 
                 // Generate quote locally (since Vercel doesn't have generate-quote endpoint yet)
                 const quote = generateQuoteLocally(quoteData, versionData.data.quoteId);
