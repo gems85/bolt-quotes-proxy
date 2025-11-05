@@ -991,13 +991,21 @@
                     markup: parseInt(document.getElementById('markup').value)
                 };
 
-                // First, get or create quote ID
+                // First, get or create quote ID and version number
                 const quoteIdResponse = await fetch(`/api/get-or-create-quote?projectId=${currentProject.id}`);
                 const quoteIdData = await quoteIdResponse.json();
                 
                 if (!quoteIdData.success) {
                     throw new Error(quoteIdData.error || 'Failed to get quote ID');
                 }
+                const versionResponse = await fetch('/api/get-quote-version', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ projectId: currentProject.id })
+                });
+                const versionData = await versionResponse.json();
+                
+                if (!versionData.success) {
                 
                 // Generate quote locally (since Vercel doesn't have generate-quote endpoint yet)
                 const quote = generateQuoteLocally(quoteData, versionData.data.quoteId);
