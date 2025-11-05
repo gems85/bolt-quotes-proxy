@@ -999,6 +999,7 @@
                     throw new Error(quoteIdData.error || 'Failed to get quote ID');
                 }
                
+                const versionResponse = await fetch(`/api/get-quote-version?projectId=${currentProject.id}`);
                 const versionData = await versionResponse.json();
                 
                 if (!versionData.success) {
