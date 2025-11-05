@@ -869,14 +869,17 @@
             const selectedAddons = [];
             let addonsTotal = 0;
             const addonCheckboxes = document.querySelectorAll('input[name="optional-addon"]:checked');
+            console.log('🔍 Collecting add-ons:', addonCheckboxes.length, 'checked');
             addonCheckboxes.forEach(checkbox => {
                 const addonData = {
                     name: checkbox.dataset.name,
                     price: parseFloat(checkbox.dataset.price)
                 };
+                console.log('  ✓ Add-on:', addonData.name, '-', addonData.price);
                 selectedAddons.push(addonData);
                 addonsTotal += addonData.price;
             });
+            console.log('📦 Total selected add-ons:', selectedAddons.length, 'Total cost:', addonsTotal);
             
             // ✅ NEW: Check for manual overrides
             const overrideMaterials = parseFloat(document.getElementById('overrideMaterials').value);
